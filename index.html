@@ -4,7 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>日文旅遊學習帳</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="description" content="日文旅遊學習工具">
+<!-- Preconnect to speed up external resources -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com">
+<!-- Load fonts async to not block rendering -->
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&family=Noto+Sans+TC:wght@400;500&family=Inter:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&family=Noto+Sans+TC:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <style>
 :root{
   --bg:#ffffff;
@@ -274,6 +281,7 @@ body{background:#f4f4f6;color:var(--text);font-family:'Noto Sans TC','Noto Sans 
     <div class="sidebar-logo">
       <div class="ja">日本語</div>
       <div class="sub">TRAVEL STUDY</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:3px;letter-spacing:.05em">v1.8.0</div>
     </div>
     <div class="nav-item on" data-page="kana"><span class="nav-icon">あ</span>假名練習</div>
     <div class="nav-item" data-page="vocab"><span class="nav-icon">📖</span>每日單字</div>
@@ -465,11 +473,18 @@ body{background:#f4f4f6;color:var(--text);font-family:'Noto Sans TC','Noto Sans 
         <div id="rec-quiz-list"></div>
       </div>
       <div class="card" id="rec-detail-card" style="display:none">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
           <div class="card-title" style="margin-bottom:0" id="rec-detail-title">測驗詳情</div>
-          <button class="btn btn-primary" id="rec-ai-btn" style="font-size:12px;padding:5px 12px">✦ AI 講解錯題</button>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn" id="rec-copy-prompt-btn" style="font-size:12px;padding:5px 12px">複製提示詞</button>
+            <button class="btn btn-primary" id="rec-ai-btn" style="font-size:12px;padding:5px 12px">✦ AI 講解錯題</button>
+          </div>
         </div>
         <div id="rec-detail-body"></div>
+        <div id="rec-prompt-preview" style="display:none;margin-top:10px">
+          <div class="card-title">提示詞預覽（可直接貼給任何 AI）</div>
+          <div class="export-box" id="rec-prompt-box" style="max-height:140px"></div>
+        </div>
         <div class="card" id="rec-ai-card" style="display:none;margin-top:10px">
           <div class="ai-label">GEMINI AI</div>
           <div class="ai-box loading" id="rec-ai-box">AI 分析中...</div>
@@ -531,6 +546,19 @@ body{background:#f4f4f6;color:var(--text);font-family:'Noto Sans TC','Noto Sans 
           <button class="btn" id="settings-clear-key-btn">清除 Key</button>
         </div>
         <div id="key-status" style="font-size:12px;color:var(--success);margin-top:8px;min-height:16px"></div>
+        <div style="margin-top:10px;padding:10px 12px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border)">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">今日 AI 使用量</div>
+          <div id="ai-token-display" style="font-size:14px;font-weight:500;color:var(--text)">今日累計 0 tokens</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:3px">每日台灣時間下午 3-4 點重置</div>
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div style="font-size:12px;color:var(--text3);margin-bottom:8px">額度查詢（需登入 Google 帳號）</div>
+          <div class="row2" style="margin-top:0">
+            <a href="https://aistudio.google.com/app/usage" target="_blank" class="btn" style="text-align:center;text-decoration:none">查看今日用量</a>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" class="btn" style="text-align:center;text-decoration:none">管理 API Key</a>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:8px;line-height:1.6">免費額度每日台灣時間 15:00-16:00 重置（太平洋時間午夜）</div>
+        </div>
       </div>
       <div class="card">
         <div class="card-title">學習進度</div>
@@ -540,6 +568,10 @@ body{background:#f4f4f6;color:var(--text);font-family:'Noto Sans TC','Noto Sans 
       <div class="card">
         <div class="card-title">部署說明</div>
         <div style="font-size:13px;color:var(--text2);line-height:1.9">
+          <div style="margin-bottom:8px;padding:8px 12px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);font-family:'Inter',monospace;font-size:12px">
+            <span style="color:var(--text3)">版本</span> <strong style="color:var(--text)">v1.8.0</strong>
+            <span style="color:var(--text3);margin-left:12px">模型</span> <strong style="color:var(--text)">gemini-2.5-flash-lite</strong>
+          </div>
           這是一個 <strong style="color:var(--text)">單一 HTML 檔案</strong>，無需伺服器。<br>
           部署方式：<br>
           · <a href="https://pages.cloudflare.com" target="_blank" style="color:var(--accent)">Cloudflare Pages</a> — 拖曳上傳此檔案，免費<br>
@@ -564,10 +596,10 @@ body{background:#f4f4f6;color:var(--text);font-family:'Noto Sans TC','Noto Sans 
   </div>
 </div>
 
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<!-- Firebase SDKs — defer so they don't block page render -->
+<script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
 <script>
 // ══════════════════════════════════════
@@ -640,9 +672,9 @@ var FB_CONFIG={
   messagingSenderId:"1065455504555",
   appId:"1:1065455504555:web:bf6cafe445e7e49f387bee"
 };
-var fbApp=firebase.initializeApp(FB_CONFIG);
-var fbDb=firebase.database();
-var fbAuth=firebase.auth();
+// fbDb and fbAuth initialized lazily in initFirebase()
+var fbDb=null;
+var fbAuth=null;
 var fbUid=null;
 var fbSaveTimer=null;
 
@@ -659,7 +691,7 @@ function setSyncStatus(state){
 
 // ── Firebase save (debounced 1.5s) ──
 function fbSave(){
-  if(!fbUid)return;
+  if(!fbUid||!fbDb)return;
   clearTimeout(fbSaveTimer);
   setSyncStatus('syncing');
   fbSaveTimer=setTimeout(function(){
@@ -678,7 +710,7 @@ function fbSave(){
 
 // ── Firebase load ──
 function fbLoad(cb){
-  if(!fbUid){cb();return;}
+  if(!fbUid||!fbDb){cb();return;}
   setSyncStatus('syncing');
   fbDb.ref('users/'+fbUid+'/progress').once('value').then(function(snap){
     var data=snap.val();
@@ -707,10 +739,10 @@ function fbLoad(cb){
 }
 
 // ── Google auth ──
-var googleProvider=new firebase.auth.GoogleAuthProvider();
+var googleProvider=null;
 
 function fbSignIn(cb){
-  // Check if already signed in
+  if(!fbAuth){cb();return;}
   fbAuth.onAuthStateChanged(function(user){
     if(user){
       fbUid=user.uid;
@@ -725,6 +757,7 @@ function fbSignIn(cb){
 }
 
 function googleLogin(){
+  if(!fbAuth){alert('Firebase 尚未載入，請稍候再試');return;}
   fbAuth.signInWithPopup(googleProvider).then(function(result){
     var user=result.user;
     fbUid=user.uid;
@@ -741,6 +774,7 @@ function googleLogin(){
 }
 
 function googleLogout(){
+  if(!fbAuth)return;
   if(!confirm('確定要登出？登出後進度仍保存在這台裝置。'))return;
   fbAuth.signOut().then(function(){
     fbUid=null;
@@ -812,21 +846,85 @@ function load(){
 // ══════════════════════════════════════
 //  GEMINI
 // ══════════════════════════════════════
+var aiTodayTokens=parseInt(localStorage.getItem('aiTodayTokens')||'0');
+var aiTodayDate=localStorage.getItem('aiTodayDate')||'';
+function aiTrackTokens(tokens){
+  var today=new Date().toLocaleDateString();
+  if(aiTodayDate!==today){aiTodayTokens=0;aiTodayDate=today;}
+  aiTodayTokens+=tokens;
+  localStorage.setItem('aiTodayTokens',aiTodayTokens);
+  localStorage.setItem('aiTodayDate',aiTodayDate);
+  updateAiTokenDisplay();
+}
+function updateAiTokenDisplay(){
+  var el=document.getElementById('ai-token-display');
+  if(el)el.textContent='今日累計 '+aiTodayTokens.toLocaleString()+' tokens';
+}
+
+// ai() returns {text, inputTokens, outputTokens, totalTokens} or string on error
 async function ai(prompt){
   if(!S.apiKey)return'請先在「設定」頁輸入 Gemini API Key。';
   try{
-    var r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+S.apiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
+    var controller=new AbortController();
+    var timer=setTimeout(function(){controller.abort();},15000);
+    var r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key='+S.apiKey,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}]}),
+      signal:controller.signal
+    });
+    clearTimeout(timer);
     var d=await r.json();
-    if(d.candidates&&d.candidates[0])return d.candidates[0].content.parts[0].text;
-    if(d.error)return'API 錯誤：'+d.error.message;
+    if(d.candidates&&d.candidates[0]){
+      var text=d.candidates[0].content.parts[0].text;
+      var usage=d.usageMetadata||{};
+      var total=(usage.totalTokenCount||0);
+      if(total>0)aiTrackTokens(total);
+      return{text:text,inputTokens:usage.promptTokenCount||0,outputTokens:usage.candidatesTokenCount||0,totalTokens:total};
+    }
+    if(d.error){
+      var msg=d.error.message||'';
+      if(d.error.code===429||msg.indexOf('quota')!==-1||msg.indexOf('RESOURCE_EXHAUSTED')!==-1){
+        return'❌ API 額度已用完。\n\n每日額度在台灣時間下午 3-4 點重置，或前往 aistudio.google.com 確認用量。';
+      }
+      if(d.error.code===400)return'❌ API Key 無效，請到設定頁重新輸入。';
+      return'API 錯誤（'+d.error.code+'）：'+msg;
+    }
     return'回應格式錯誤';
-  }catch(e){return'連線失敗：'+e.message;}
+  }catch(e){
+    if(e.name==='AbortError')return'❌ 請求逾時（15秒），請檢查網路或稍後再試。';
+    return'連線失敗：'+e.message;
+  }
 }
+
+// helper: extract text from ai() result (handles both string and object)
+function aiText(result){return typeof result==='object'?result.text:result;}
+function aiIsError(result){return typeof result==='string'&&result.startsWith('❌');}
+
+// token tag HTML
+function tokenTag(result){
+  if(typeof result!=='object'||!result.totalTokens)return'';
+  return'<div style="margin-top:8px;font-size:11px;color:var(--text3);display:flex;gap:10px;flex-wrap:wrap">'+
+    '<span>輸入 '+result.inputTokens.toLocaleString()+' tokens</span>'+
+    '<span>輸出 '+result.outputTokens.toLocaleString()+' tokens</span>'+
+    '<span style="font-weight:500;color:var(--text2)">本次共 '+result.totalTokens.toLocaleString()+' tokens</span>'+
+    '</div>';
+}
+
 async function showAI(boxId,cardId,prompt){
   var card=document.getElementById(cardId),box=document.getElementById(boxId);
   card.style.display='';box.className='ai-box loading';box.textContent='AI 思考中...';
   card.scrollIntoView({behavior:'smooth',block:'nearest'});
-  box.textContent=await ai(prompt);box.className='ai-box';
+  var result=await ai(prompt);
+  box.className='ai-box';
+  if(typeof result==='object'){
+    box.textContent=result.text;
+    var tag=document.createElement('div');
+    tag.innerHTML=tokenTag(result);
+    box.parentNode.insertBefore(tag,box.nextSibling);
+  } else {
+    box.textContent=result;
+  }
 }
 
 // ══════════════════════════════════════
@@ -1134,6 +1232,23 @@ function logR(item,score,questions){
 var recOpenIdx=-1;
 var recCurrentWrongs=[];
 
+function toggleQhItem(el,idx){
+  var body=el.querySelector('.qh-body');
+  var chevron=el.querySelector('.qh-chevron');
+  var isOpen=body.style.display==='block';
+  // close all others
+  document.querySelectorAll('.qh-item').forEach(function(item){
+    item.querySelector('.qh-body').style.display='none';
+    item.querySelector('.qh-chevron').style.transform='';
+    item.style.borderColor='';
+  });
+  if(!isOpen){
+    body.style.display='block';
+    chevron.style.transform='rotate(180deg)';
+    el.style.borderColor='var(--text)';
+  }
+}
+
 function renderRecord(){
   var tD=VDB.length,dD=Object.keys(S.vDone).filter(function(k){return S.vDone[k];}).length;
   var tG=GDB.length,dG=Object.keys(S.gDone).filter(function(k){return S.gDone[k];}).length;
@@ -1150,53 +1265,40 @@ function renderRecord(){
 
   // Quiz history list
   var hist=S.quizHistory||[];
+  var ql=document.getElementById('rec-quiz-list');
   if(hist.length===0){
-    document.getElementById('rec-quiz-list').innerHTML='<div style="font-size:13px;color:var(--text3);padding:6px 0">還沒有測驗紀錄，去做一次測驗吧！</div>';
+    ql.innerHTML='<div style="font-size:13px;color:var(--text3);padding:6px 0">還沒有測驗紀錄，去做一次測驗吧！</div>';
   } else {
-    document.getElementById('rec-quiz-list').innerHTML=hist.slice(0,20).map(function(entry,idx){
+    ql.innerHTML=hist.slice(0,20).map(function(entry,idx){
       var parts=entry.score.split('/');
       var ok=parseInt(parts[0])||0,tot=parseInt(parts[1])||0;
       var pct2=tot>0?Math.round(ok/tot*100):0;
       var wrongCount=entry.questions?entry.questions.filter(function(q){return !q.correct;}).length:0;
       var color=pct2>=80?'var(--success)':pct2>=50?'var(--warning-text)':'var(--danger)';
-      return'<div class="qh-item" data-idx="'+idx+'">'+
+      return'<div class="qh-item" onclick="toggleQhItem(this,'+idx+')" data-idx="'+idx+'">'+
         '<div class="qh-head">'+
         '<div class="qh-title">'+entry.item+'</div>'+
         '<div class="qh-score" style="color:'+color+'">'+entry.score+' ('+pct2+'%)</div>'+
         '<div class="qh-ts">'+entry.ts+'</div>'+
         '<div class="qh-chevron">▼</div>'+
         '</div>'+
+        '<div class="qh-body" style="display:none">'+
+        '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text3);margin-bottom:8px">'+
+          '<span>答對 '+ok+' 題 / 答錯 '+wrongCount+' 題</span>'+
+          (wrongCount>0?'<span style="color:var(--accent);cursor:pointer;text-decoration:underline" onclick="event.stopPropagation();showRecDetail('+idx+')">查看詳情 ↗</span>':'<span style="color:var(--success)">全部答對！</span>')+
+        '</div>'+
         (entry.questions&&entry.questions.length>0?
-          '<div class="qh-body">'+
-          '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text3);margin-bottom:8px">'+
-            '<span>答對 '+ok+' 題 / 答錯 '+wrongCount+' 題</span>'+
-            (wrongCount>0?'<span style="color:var(--accent);cursor:pointer" data-action="show-detail" data-idx="'+idx+'">查看詳情 →</span>':'<span style="color:var(--success)">全部答對！</span>')+
-          '</div>'+
           entry.questions.map(function(q){
             return'<div class="qh-row">'+
               '<div class="qh-icon '+(q.correct?'qh-ok':'qh-no')+'">'+(q.correct?'✓':'✗')+'</div>'+
               '<div class="qh-q">'+q.q+'</div>'+
-              (!q.correct?'<div class="qh-ans" style="color:var(--danger)">你：'+q.userAns+'<br>正確：'+q.correctAns+'</div>':'<div class="qh-ans" style="color:var(--success)">'+q.correctAns+'</div>')+
+              (!q.correct?'<div class="qh-ans" style="color:var(--danger)">你：'+q.userAns+'<br>正確：'+q.correctAns+'</div>':'<div class="qh-ans" style="color:var(--success)">✓</div>')+
             '</div>';
-          }).join('')+
-          '</div>':'<div class="qh-body"><div style="font-size:13px;color:var(--text3)">無詳細題目記錄</div></div>')+
+          }).join(''):'<div style="font-size:13px;color:var(--text3)">無詳細題目記錄</div>')+
+        '</div>'+
       '</div>';
     }).join('');
   }
-
-  // bind click events on quiz history
-  document.getElementById('rec-quiz-list').addEventListener('click',function(e){
-    var item=e.target.closest('.qh-item');
-    var act=e.target.dataset.action;
-    if(act==='show-detail'){
-      var idx=parseInt(e.target.dataset.idx);
-      showRecDetail(idx);
-      return;
-    }
-    if(item){
-      item.classList.toggle('open');
-    }
-  });
 
   var dDKeys=Object.keys(S.vDone).filter(function(k){return S.vDone[k];}),dGKeys=Object.keys(S.gDone).filter(function(k){return S.gDone[k];});
   var exportTxt='【日文學習進度報告】\n整體進度：'+pct+'%\n單字：已完成 '+dD+'/'+tD+' 天（共學 '+(dD*15)+' 個單字）\n文法：已學 '+dG+'/'+tG+' 個句型\n\n已完成單字：'+dDKeys.join(', ')+'\n已學文法：'+dGKeys.map(function(k){var g=GDB.find(function(x){return x.id===k;});return g?g.title:k;}).join('、')+'\n\n最近學習紀錄：\n'+S.log.slice(0,8).map(function(l){return'- '+l.ts+' '+l.item+' '+l.score;}).join('\n')+'\n\n請根據以上進度安排今天的複習重點，針對薄弱環節出練習題，並給我今日學習建議。';
@@ -1210,7 +1312,15 @@ function renderRecord(){
   document.getElementById('ai-review-btn').onclick=function(){
     var area=document.getElementById('review-ai-area');
     area.innerHTML='<div style="margin-top:10px"><div class="ai-label">GEMINI AI</div><div class="ai-box loading" id="rev-ai-box">AI 分析中...</div></div>';
-    ai(exportTxt).then(function(r){var b=document.getElementById('rev-ai-box');if(b){b.className='ai-box';b.textContent=r;}});
+    ai(exportTxt).then(function(r){
+      var b=document.getElementById('rev-ai-box');
+      if(b){b.className='ai-box';b.textContent=aiText(r);}
+      if(typeof r==='object'&&r.totalTokens){
+        var tag=document.createElement('div');
+        tag.innerHTML=tokenTag(r);
+        b.parentNode.insertBefore(tag,b.nextSibling);
+      }
+    });
   };
   updNav();
 }
@@ -1237,6 +1347,11 @@ function showRecDetail(idx){
     }).join('');
   card.scrollIntoView({behavior:'smooth',block:'start'});
   aiBtn.onclick=function(){recAiExplain(entry,wrongs);};
+
+  // wire copy prompt button
+  var copyBtn=document.getElementById('rec-copy-prompt-btn');
+  copyBtn.style.display=wrongs.length>0?'':'none';
+  copyBtn.onclick=function(){recCopyPrompt(entry,wrongs);};
 }
 
 async function recAiExplain(entry,wrongs){
@@ -1253,9 +1368,38 @@ async function recAiExplain(entry,wrongs){
   var prompt='我在做「'+entry.item+'」的日文測驗，以下是我答錯的題目：\n\n'+wrongDesc+'\n\n請用繁體中文：\n1. 逐題解說我錯在哪裡\n2. 給出記憶技巧\n3. 每個錯題造一個旅遊情境例句幫助記憶';
   var result=await ai(prompt);
   box.className='ai-box';
-  box.textContent=result;
+  box.textContent=aiText(result);
+  if(typeof result==='object'&&result.totalTokens){
+    var tag=document.createElement('div');
+    tag.innerHTML=tokenTag(result);
+    box.parentNode.insertBefore(tag,box.nextSibling);
+  }
 }
-function updNav(){
+function recCopyPrompt(entry,wrongs){
+  var wrongDesc=wrongs.map(function(q,i){
+    return(i+1)+'. 【'+q.type+'】\n   題目：'+q.q+'\n   我答：'+q.userAns+'\n   正確：'+q.correctAns;
+  }).join('\n\n');
+  var prompt='我在學日文，剛完成「'+entry.item+'」測驗（'+entry.score+'），以下是我答錯的 '+wrongs.length+' 道題目：\n\n'+wrongDesc+'\n\n請用繁體中文幫我：\n1. 逐題解說我錯在哪裡（說明正確用法）\n2. 給每道錯題一個記憶技巧\n3. 每道錯題造一個日本旅遊情境的例句，附讀音與中文翻譯\n4. 最後整理出這次測驗暴露的共同弱點，並給我改善建議';
+  // show preview
+  var preview=document.getElementById('rec-prompt-preview');
+  var box=document.getElementById('rec-prompt-box');
+  preview.style.display='';
+  box.textContent=prompt;
+  preview.scrollIntoView({behavior:'smooth',block:'nearest'});
+  // copy to clipboard
+  navigator.clipboard.writeText(prompt).then(function(){
+    var btn=document.getElementById('rec-copy-prompt-btn');
+    btn.textContent='已複製！';
+    setTimeout(function(){btn.textContent='複製提示詞';},2500);
+  }).catch(function(){
+    // fallback: select text in box
+    var range=document.createRange();
+    range.selectNodeContents(box);
+    var sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  });
+}
   var tD=VDB.length,dD=Object.keys(S.vDone).filter(function(k){return S.vDone[k];}).length;
   var tG=GDB.length,dG=Object.keys(S.gDone).filter(function(k){return S.gDone[k];}).length;
   var pct=Math.round((dD+dG)/(tD+tG)*100);
@@ -1367,7 +1511,13 @@ async function startAiQuiz(){
 
   try{
     var raw=await ai(prompt);
-    var clean=raw.replace(/```json|```/g,'').trim();
+    // check if ai() returned an error string
+    if(aiIsError(raw)||typeof raw==='string'){
+      alert(aiText(raw));
+      btn.textContent='✦ AI 出題（需 API Key）';btn.disabled=false;
+      return;
+    }
+    var clean=raw.text.replace(/```json|```/g,'').trim();
     var data=JSON.parse(clean);
     rvAiQL=data.questions;
     rvAiQi=0;rvAiQs=0;rvAiQa=false;
@@ -1622,9 +1772,17 @@ async function triggerAiAnalysis(){
   var result=await ai(prompt);
   
   // Split analysis text and JSON
-  var parts=result.split('---JSON---');
+  var rawText=aiText(result);
+  var parts=rawText.split('---JSON---');
   var analysisText=parts[0].trim();
-  box.className='ai-box';box.textContent=analysisText;
+  box.className='ai-box';
+  box.textContent=analysisText;
+  // show token usage
+  if(typeof result==='object'&&result.totalTokens){
+    var tag=document.createElement('div');
+    tag.innerHTML=tokenTag(result);
+    box.parentNode.insertBefore(tag,box.nextSibling);
+  }
 
   // Parse and load extra quiz if present
   if(parts[1]){
@@ -1659,7 +1817,9 @@ function renderReviewStats(){
 // ══════════════════════════════════════
 //  BOOT
 // ══════════════════════════════════════
-load(); // load from localStorage first (instant)
+
+// ① 立刻從 localStorage 載入並渲染 — 不等 Firebase
+load();
 initSetup();
 initNav();
 initKana();
@@ -1668,19 +1828,45 @@ initGrammar();
 initReview();
 initSettings();
 updNav();
+updateAiTokenDisplay();
 
-// Firebase auth state listener — handles both first load and returning users
-fbSignIn(function(){
-  if(fbUid){
-    // logged in: load from cloud
-    fbLoad(function(){
-      renderKanaGrid();
-      renderVocab();
-      renderGLearn();
-      updNav();
-    });
+// ② Firebase 等 defer scripts 載入完才初始化（不阻擋首屏）
+function initFirebase(){
+  if(typeof firebase==='undefined'){
+    // SDK not yet loaded, retry
+    setTimeout(initFirebase,200);
+    return;
   }
-  // not logged in: just use localStorage (already loaded)
+  try{
+    // avoid duplicate app init
+    if(!firebase.apps.length){
+      firebase.initializeApp(FB_CONFIG);
+    }
+    fbDb=firebase.database();
+    fbAuth=firebase.auth();
+    googleProvider=new firebase.auth.GoogleAuthProvider();
+    // online/offline
+    fbDb.ref('.info/connected').on('value',function(snap){
+      if(snap.val()===true){if(fbUid)setSyncStatus('ok');}
+      else setSyncStatus('offline');
+    });
+    // sign in
+    fbSignIn(function(){
+      if(fbUid){
+        fbLoad(function(){
+          renderKanaGrid();
+          renderVocab();
+          renderGLearn();
+          updNav();
+        });
+      }
+    });
+  }catch(e){setSyncStatus('offline');}
+}
+
+// Wait for DOM + deferred scripts
+window.addEventListener('load',function(){
+  initFirebase();
 });
 </script>
 </body>
