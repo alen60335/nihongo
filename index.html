@@ -218,7 +218,7 @@ body{background:#f4f4f6;color:var(--tx);font-family:'Noto Sans TC','Noto Sans JP
     <div class="sidebar-logo">
       <div class="ja">日本語</div>
       <div class="sub">TRAVEL STUDY</div>
-      <div class="ver">v2.1.0 · gemini-2.5-flash-lite</div>
+      <div class="ver">v2.3.0 · gemini-2.5-flash-lite</div>
     </div>
     <div class="nav-item on" data-page="kana"><span class="nav-icon">あ</span>假名練習</div>
     <div class="nav-item" data-page="vocab"><span class="nav-icon">📖</span>每日單字</div>
@@ -238,12 +238,18 @@ body{background:#f4f4f6;color:var(--tx);font-family:'Noto Sans TC','Noto Sans JP
     <div class="page on" id="page-kana">
       <div class="page-title">假名練習</div>
       <div class="page-sub">點字格標記已學 · 點按鈕讓 AI 出題或講解</div>
-      <div class="tabs" id="kana-type-tabs">
-        <div class="ttab on" data-kt="hira">平假名</div>
-        <div class="ttab" data-kt="kata">片假名</div>
+      <div class="tabs" id="kana-script-tabs">
+        <div class="ttab on" data-ks="hira">平假名</div>
+        <div class="ttab" data-ks="kata">片假名</div>
+      </div>
+      <div class="stabs" id="kana-cat-tabs">
+        <div class="stab on" data-kc="base">清音</div>
+        <div class="stab" data-kc="daku">濁音</div>
+        <div class="stab" data-kc="han">半濁音</div>
+        <div class="stab" data-kc="you">拗音</div>
       </div>
       <div class="card">
-        <div class="card-title" id="kana-grid-label">平假名 五十音</div>
+        <div class="card-title" id="kana-grid-label">平假名・清音</div>
         <div class="kana-grid" id="kana-grid"></div>
         <div class="row2">
           <button class="btn" id="kana-explain-btn">AI 講解發音規則 ↗</button>
@@ -453,7 +459,7 @@ body{background:#f4f4f6;color:var(--tx);font-family:'Noto Sans TC','Noto Sans JP
         <div class="card-title">部署說明</div>
         <div style="font-size:13px;color:var(--tx2);line-height:1.9">
           <div style="margin-bottom:8px;padding:8px 12px;background:var(--sf2);border-radius:var(--rs);border:1px solid var(--bd);font-size:12px">
-            <span style="color:var(--tx3)">版本</span> <strong>v2.1.0</strong>
+            <span style="color:var(--tx3)">版本</span> <strong>v2.3.0</strong>
             <span style="color:var(--tx3);margin-left:12px">模型</span> <strong>gemini-2.5-flash-lite</strong>
           </div>
           這是一個 <strong>單一 HTML 檔案</strong>，無需伺服器。<br>
@@ -482,6 +488,22 @@ body{background:#f4f4f6;color:var(--tx);font-family:'Noto Sans TC','Noto Sans JP
 <script>
 var HIRA=[['あ','a'],['い','i'],['う','u'],['え','e'],['お','o'],['か','ka'],['き','ki'],['く','ku'],['け','ke'],['こ','ko'],['さ','sa'],['し','shi'],['す','su'],['せ','se'],['そ','so'],['た','ta'],['ち','chi'],['つ','tsu'],['て','te'],['と','to'],['な','na'],['に','ni'],['ぬ','nu'],['ね','ne'],['の','no'],['は','ha'],['ひ','hi'],['ふ','fu'],['へ','he'],['ほ','ho'],['ま','ma'],['み','mi'],['む','mu'],['め','me'],['も','mo'],['や','ya'],['',''],['ゆ','yu'],['',''],['よ','yo'],['ら','ra'],['り','ri'],['る','ru'],['れ','re'],['ろ','ro'],['わ','wa'],['',''],['',''],['',''],['を','wo'],['ん','n'],['',''],['',''],['',''],['','']];
 var KATA=[['ア','a'],['イ','i'],['ウ','u'],['エ','e'],['オ','o'],['カ','ka'],['キ','ki'],['ク','ku'],['ケ','ke'],['コ','ko'],['サ','sa'],['シ','shi'],['ス','su'],['セ','se'],['ソ','so'],['タ','ta'],['チ','chi'],['ツ','tsu'],['テ','te'],['ト','to'],['ナ','na'],['ニ','ni'],['ヌ','nu'],['ネ','ne'],['ノ','no'],['ハ','ha'],['ヒ','hi'],['フ','fu'],['ヘ','he'],['ホ','ho'],['マ','ma'],['ミ','mi'],['ム','mu'],['メ','me'],['モ','mo'],['ヤ','ya'],['',''],['ユ','yu'],['',''],['ヨ','yo'],['ラ','ra'],['リ','ri'],['ル','ru'],['レ','re'],['ロ','ro'],['ワ','wa'],['',''],['',''],['',''],['ヲ','wo'],['ン','n'],['',''],['',''],['',''],['','']];
+var HIRA_D=[['が','ga'],['ぎ','gi'],['ぐ','gu'],['げ','ge'],['ご','go'],['ざ','za'],['じ','ji'],['ず','zu'],['ぜ','ze'],['ぞ','zo'],['だ','da'],['ぢ','di'],['づ','du'],['で','de'],['ど','do'],['ば','ba'],['び','bi'],['ぶ','bu'],['べ','be'],['ぼ','bo']];
+var KATA_D=[['ガ','ga'],['ギ','gi'],['グ','gu'],['ゲ','ge'],['ゴ','go'],['ザ','za'],['ジ','ji'],['ズ','zu'],['ゼ','ze'],['ゾ','zo'],['ダ','da'],['ヂ','di'],['ヅ','du'],['デ','de'],['ド','do'],['バ','ba'],['ビ','bi'],['ブ','bu'],['ベ','be'],['ボ','bo']];
+var HIRA_P=[['ぱ','pa'],['ぴ','pi'],['ぷ','pu'],['ぺ','pe'],['ぽ','po']];
+var KATA_P=[['パ','pa'],['ピ','pi'],['プ','pu'],['ペ','pe'],['ポ','po']];
+var HIRA_Y=[['きゃ','kya'],['きゅ','kyu'],['きょ','kyo'],['しゃ','sha'],['しゅ','shu'],['しょ','sho'],['ちゃ','cha'],['ちゅ','chu'],['ちょ','cho'],['にゃ','nya'],['にゅ','nyu'],['にょ','nyo'],['ひゃ','hya'],['ひゅ','hyu'],['ひょ','hyo'],['みゃ','mya'],['みゅ','myu'],['みょ','myo'],['りゃ','rya'],['りゅ','ryu'],['りょ','ryo'],['ぎゃ','gya'],['ぎゅ','gyu'],['ぎょ','gyo'],['じゃ','ja'],['じゅ','ju'],['じょ','jo'],['びゃ','bya'],['びゅ','byu'],['びょ','byo'],['ぴゃ','pya'],['ぴゅ','pyu'],['ぴょ','pyo']];
+var KATA_Y=[['キャ','kya'],['キュ','kyu'],['キョ','kyo'],['シャ','sha'],['シュ','shu'],['ショ','sho'],['チャ','cha'],['チュ','chu'],['チョ','cho'],['ニャ','nya'],['ニュ','nyu'],['ニョ','nyo'],['ヒャ','hya'],['ヒュ','hyu'],['ヒョ','hyo'],['ミャ','mya'],['ミュ','myu'],['ミョ','myo'],['リャ','rya'],['リュ','ryu'],['リョ','ryo'],['ギャ','gya'],['ギュ','gyu'],['ギョ','gyo'],['ジャ','ja'],['ジュ','ju'],['ジョ','jo'],['ビャ','bya'],['ビュ','byu'],['ビョ','byo'],['ピャ','pya'],['ピュ','pyu'],['ピョ','pyo']];
+var KANA_SETS={
+  hira:{label:'平假名',sub:'清音',data:HIRA,cols:5,seenKey:'seenH'},
+  kata:{label:'片假名',sub:'清音',data:KATA,cols:5,seenKey:'seenK'},
+  hira_d:{label:'平假名',sub:'濁音',data:HIRA_D,cols:5,seenKey:'seenHD'},
+  kata_d:{label:'片假名',sub:'濁音',data:KATA_D,cols:5,seenKey:'seenKD'},
+  hira_p:{label:'平假名',sub:'半濁音',data:HIRA_P,cols:5,seenKey:'seenHP'},
+  kata_p:{label:'片假名',sub:'半濁音',data:KATA_P,cols:5,seenKey:'seenKP'},
+  hira_y:{label:'平假名',sub:'拗音',data:HIRA_Y,cols:3,seenKey:'seenHY'},
+  kata_y:{label:'片假名',sub:'拗音',data:KATA_Y,cols:3,seenKey:'seenKY'}
+};
 var VDB=[
   {week:1,day:1,theme:'打招呼',words:[{jp:'おはよう',rd:'ohayou',zh:'早安（輕鬆）'},{jp:'おはようございます',rd:'ohayou gozaimasu',zh:'早安（正式）'},{jp:'こんにちは',rd:'konnichiwa',zh:'你好／午安'},{jp:'こんばんは',rd:'konbanwa',zh:'晚安（問候）'},{jp:'おやすみなさい',rd:'oyasumi nasai',zh:'晚安（睡前）'},{jp:'さようなら',rd:'sayounara',zh:'再見'},{jp:'またね',rd:'matane',zh:'拜拜'},{jp:'はじめまして',rd:'hajimemashite',zh:'初次見面'},{jp:'よろしく',rd:'yoroshiku',zh:'請多指教（輕鬆）'},{jp:'よろしくおねがいします',rd:'yoroshiku onegaishimasu',zh:'請多指教（正式）'},{jp:'おげんきですか',rd:'ogenki desu ka',zh:'你好嗎？'},{jp:'げんきです',rd:'genki desu',zh:'我很好'},{jp:'ありがとう',rd:'arigatou',zh:'謝謝（輕鬆）'},{jp:'ありがとうございます',rd:'arigatou gozaimasu',zh:'謝謝（正式）'},{jp:'どういたしまして',rd:'dou itashimashite',zh:'不客氣'}]},
   {week:1,day:2,theme:'基本應答',words:[{jp:'はい',rd:'hai',zh:'是'},{jp:'いいえ',rd:'iie',zh:'不是'},{jp:'そうです',rd:'sou desu',zh:'對、是的'},{jp:'ちがいます',rd:'chigaimasu',zh:'不對'},{jp:'わかりました',rd:'wakarimashita',zh:'我明白了'},{jp:'わかりません',rd:'wakarimasen',zh:'我不懂'},{jp:'しりません',rd:'shirimasen',zh:'我不知道'},{jp:'すみません',rd:'sumimasen',zh:'不好意思'},{jp:'ごめんなさい',rd:'gomen nasai',zh:'對不起'},{jp:'だいじょうぶ',rd:'daijoubu',zh:'沒關係'},{jp:'もういちど',rd:'mou ichido',zh:'再說一次'},{jp:'ゆっくり',rd:'yukkuri',zh:'慢慢地'},{jp:'にほんご',rd:'nihongo',zh:'日文'},{jp:'えいご',rd:'eigo',zh:'英文'},{jp:'ちゅうごくご',rd:'chuugokugo',zh:'中文'}]},
@@ -553,7 +575,7 @@ function fbSave(){
   clearTimeout(fbSaveTimer);
   setSyncStatus('syncing');
   fbSaveTimer=setTimeout(function(){
-    fbDb.ref('users/'+fbUid+'/progress').set({seenH:S.seenH,seenK:S.seenK,vDone:S.vDone,gDone:S.gDone,wrongs:S.wrongs,log:S.log.slice(0,20),quizHistory:(S.quizHistory||[]).slice(0,30),updatedAt:Date.now()})
+    fbDb.ref('users/'+fbUid+'/progress').set({seenH:S.seenH,seenK:S.seenK,seenHD:S.seenHD,seenKD:S.seenKD,seenHP:S.seenHP,seenKP:S.seenKP,seenHY:S.seenHY,seenKY:S.seenKY,vDone:S.vDone,gDone:S.gDone,wrongs:S.wrongs,log:S.log.slice(0,20),quizHistory:(S.quizHistory||[]).slice(0,30),updatedAt:Date.now()})
       .then(function(){setSyncStatus('ok');}).catch(function(){setSyncStatus('error');});
   },1500);
 }
@@ -563,7 +585,7 @@ function fbLoad(cb){
   fbDb.ref('users/'+fbUid+'/progress').once('value').then(function(snap){
     var d=snap.val();
     if(d&&(d.updatedAt||0)>(S.updatedAt||0)){
-      if(d.seenH)S.seenH=d.seenH;if(d.seenK)S.seenK=d.seenK;
+      if(d.seenH)S.seenH=d.seenH;if(d.seenK)S.seenK=d.seenK;if(d.seenHD)S.seenHD=d.seenHD;if(d.seenKD)S.seenKD=d.seenKD;if(d.seenHP)S.seenHP=d.seenHP;if(d.seenKP)S.seenKP=d.seenKP;if(d.seenHY)S.seenHY=d.seenHY;if(d.seenKY)S.seenKY=d.seenKY;
       if(d.vDone)S.vDone=d.vDone;if(d.gDone)S.gDone=d.gDone;
       if(d.wrongs)S.wrongs=d.wrongs;if(d.log)S.log=d.log;
       if(d.quizHistory)S.quizHistory=d.quizHistory;
@@ -619,7 +641,7 @@ function initFirebase(){
 }
 
 // ══ STATE ══
-var S={apiKey:'',kanaType:'hira',seenH:{},seenK:{},vDone:{},gDone:{},vW:1,vD:1,gW:1,gId:null,gMode:'learn',log:[],wrongs:{kana:{},vocab:{},grammar:{}},updatedAt:0,quizHistory:[]};
+var S={apiKey:'',kanaScript:'hira',kanaCat:'base',seenH:{},seenK:{},seenHD:{},seenKD:{},seenHP:{},seenKP:{},seenHY:{},seenKY:{},vDone:{},gDone:{},vW:1,vD:1,gW:1,gId:null,gMode:'learn',log:[],wrongs:{kana:{},vocab:{},grammar:{}},updatedAt:0,quizHistory:[]};
 function save(){S.updatedAt=Date.now();try{localStorage.setItem('jp2',JSON.stringify(S));}catch(e){}fbSave();}
 function load(){
   try{var d=localStorage.getItem('jp2');if(d){var p=JSON.parse(d);Object.keys(p).forEach(function(k){S[k]=p[k];});}var k=localStorage.getItem('jpKey2');if(k)S.apiKey=k;}catch(e){}
@@ -731,21 +753,35 @@ function updNav(){
 
 // ══ KANA ══
 var kQL=[],kQi=0,kQs=0,kQa=false,kAnswerLog=[];
+function currentKanaSet(){
+  var script=S.kanaScript||'hira', cat=S.kanaCat||'base';
+  var key=script+(cat==='base'?'':cat==='daku'?'_d':cat==='han'?'_p':'_y');
+  return KANA_SETS[key]||KANA_SETS.hira;
+}
 function initKana(){
-  document.getElementById('kana-type-tabs').addEventListener('click',function(e){
-    var kt=e.target.dataset.kt;if(!kt)return;
-    S.kanaType=kt;
-    document.querySelectorAll('#kana-type-tabs .ttab').forEach(function(t){t.classList.toggle('on',t.dataset.kt===kt);});
-    document.getElementById('kana-grid-label').textContent=kt==='hira'?'平假名 五十音':'片假名 五十音';
-    renderKanaGrid();
+  // script tabs (平/片)
+  document.getElementById('kana-script-tabs').addEventListener('click',function(e){
+    var ks=e.target.dataset.ks;if(!ks)return;
+    S.kanaScript=ks;
+    document.querySelectorAll('#kana-script-tabs .ttab').forEach(function(t){t.classList.toggle('on',t.dataset.ks===ks);});
+    updateKanaLabel();renderKanaGrid();
+  });
+  // category tabs (清/濁/半濁/拗)
+  document.getElementById('kana-cat-tabs').addEventListener('click',function(e){
+    var kc=e.target.dataset.kc;if(!kc)return;
+    S.kanaCat=kc;
+    document.querySelectorAll('#kana-cat-tabs .stab').forEach(function(t){t.classList.toggle('on',t.dataset.kc===kc);});
+    updateKanaLabel();renderKanaGrid();
   });
   document.getElementById('kana-grid').addEventListener('click',function(e){
-    var kc=e.target.closest('.kc');if(!kc||kc.classList.contains('empty'))return;
-    var i=parseInt(kc.dataset.i),key=S.kanaType==='hira'?'seenH':'seenK';
-    S[key][i]=!S[key][i];save();renderKanaGrid();
+    var cell=e.target.closest('.kc');if(!cell||cell.classList.contains('empty'))return;
+    var i=parseInt(cell.dataset.i),set=currentKanaSet();
+    if(!S[set.seenKey])S[set.seenKey]={};
+    S[set.seenKey][i]=!S[set.seenKey][i];save();renderKanaGrid();
   });
   document.getElementById('kana-explain-btn').addEventListener('click',function(){
-    showAI('kana-ai-box','kana-ai-card','請用中文詳細講解'+(S.kanaType==='hira'?'平假名':'片假名')+'的發音規則，包含每行發音重點、容易混淆的字、記憶技巧，附上例字。');
+    var set=currentKanaSet();
+    showAI('kana-ai-box','kana-ai-card','請用中文詳細講解日文「'+set.label+'・'+set.sub+'」的發音規則，包含每個字的發音重點、記憶技巧、容易混淆的字，附旅遊情境例字。');
   });
   document.getElementById('kana-quiz-btn').addEventListener('click',startKanaQuiz);
   document.getElementById('kana-quiz-card').addEventListener('click',function(e){
@@ -754,18 +790,33 @@ function initKana(){
     if(act==='next'){kQi++;renderKanaQ();}
     if(act==='retry')startKanaQuiz();
   });
+  S.kanaScript=S.kanaScript||'hira';
+  S.kanaCat=S.kanaCat||'base';
   renderKanaGrid();
 }
+function updateKanaLabel(){
+  var set=currentKanaSet();
+  document.getElementById('kana-grid-label').textContent=set.label+'・'+set.sub;
+  // update grid columns for youon (3 cols) vs others (5 cols)
+  var grid=document.getElementById('kana-grid');
+  grid.style.gridTemplateColumns=set.cols===3?'repeat(3,1fr)':'repeat(5,1fr)';
+}
 function renderKanaGrid(){
-  var data=S.kanaType==='hira'?HIRA:KATA,seen=S.kanaType==='hira'?S.seenH:S.seenK;
-  document.getElementById('kana-grid').innerHTML=data.map(function(k,i){
+  var set=currentKanaSet();
+  if(!S[set.seenKey])S[set.seenKey]={};
+  var seen=S[set.seenKey];
+  updateKanaLabel();
+  document.getElementById('kana-grid').innerHTML=set.data.map(function(k,i){
     if(!k[0])return'<div class="kc empty"></div>';
     return'<div class="kc'+(seen[i]?' done':'')+'" data-i="'+i+'"><span class="kbig">'+k[0]+'</span><span class="krd">'+k[1]+'</span></div>';
   }).join('');
 }
 function startKanaQuiz(){
-  var data=S.kanaType==='hira'?HIRA:KATA,pool=data.filter(function(k){return k[0]&&k[1];});
-  var allRd=pool.map(function(k){return k[1];});
+  var set=currentKanaSet();
+  var pool=set.data.filter(function(k){return k[0]&&k[1];});
+  // build answer pool from ALL kana sets for distractors
+  var allRd=[];Object.keys(KANA_SETS).forEach(function(k){KANA_SETS[k].data.forEach(function(x){if(x[1])allRd.push(x[1]);});});
+  allRd=allRd.filter(function(r,i,a){return a.indexOf(r)===i;}); // unique
   pool=pool.sort(function(){return Math.random()-.5;}).slice(0,10);
   kQL=pool.map(function(k){
     var w=allRd.filter(function(r){return r!==k[1];}).sort(function(){return Math.random()-.5;}).slice(0,3);
@@ -778,13 +829,14 @@ function startKanaQuiz(){
   document.getElementById('kana-quiz-card').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function renderKanaQ(){
+  var set=currentKanaSet();
   var tot=kQL.length;
   if(kQi>=tot){
     document.getElementById('kana-sc').textContent='答對 '+kQs+' 題';
     document.getElementById('kana-of').textContent='完成！';
     document.getElementById('kana-prog').style.width='100%';
     document.getElementById('kana-qbody').innerHTML='<div style="text-align:center;padding:1rem;color:var(--tx2);font-size:14px">完成！答對 '+kQs+'/'+tot+'</div><div class="row2"><button class="btn" data-action="retry">再來一次</button></div>';
-    logR('假名測驗（'+(S.kanaType==='hira'?'平假名':'片假名')+'）',kQs+'/'+tot,kAnswerLog);return;
+    logR('假名測驗（'+set.label+'・'+set.sub+'）',kQs+'/'+tot,kAnswerLog);return;
   }
   var q=kQL[kQi];kQa=false;
   document.getElementById('kana-sc').textContent='答對 '+kQs+' 題';
@@ -1100,7 +1152,7 @@ function initSettings(){
   });
   document.getElementById('reset-btn').addEventListener('click',function(){
     if(!confirm('確定要清除所有學習進度？'))return;
-    S.vDone={};S.gDone={};S.log=[];S.seenH={};S.seenK={};S.wrongs={kana:{},vocab:{},grammar:{}};S.quizHistory=[];S.updatedAt=Date.now();
+    S.vDone={};S.gDone={};S.log=[];S.seenH={};S.seenK={};S.seenHD={};S.seenKD={};S.seenHP={};S.seenKP={};S.seenHY={};S.seenKY={};S.wrongs={kana:{},vocab:{},grammar:{}};S.quizHistory=[];S.updatedAt=Date.now();
     save();
     if(fbUid&&fbDb)fbDb.ref('users/'+fbUid+'/progress').remove();
     renderKanaGrid();renderVocab();renderGLearn();updNav();alert('已清除！');
@@ -1254,24 +1306,42 @@ function triggerAiAnalysis(){
 function startAiQuiz(){
   if(!S.apiKey){alert('請先在「設定」頁輸入 Gemini API Key');return;}
   var btn=document.getElementById('rv-start-btn');
-  btn.textContent='AI 生成中...';btn.disabled=true;
+  var sec=0,cancelled=false;
+  btn.textContent='AI 生成中... 0s（點此取消）';btn.disabled=false;
 
-  // 倒數計時顯示
-  var sec=0;
-  var counter=setInterval(function(){sec++;btn.textContent='AI 生成中... '+sec+'s';},1000);
+  // 強制 30 秒 hard timeout
+  var hardTimer=setTimeout(function(){
+    if(cancelled)return;
+    cancelled=true;clearInterval(counter);
+    btn.textContent='✦ AI 出題（需 API Key）';
+    alert('❌ 逾時（30秒）。\n\n可能是 API 額度用完或網路問題。\n請改用「智慧複習」或「隨機抽題」。');
+  },30000);
 
-  // 縮短 prompt：只取 10 個單字樣本，最多 10 題
+  var counter=setInterval(function(){
+    sec++;btn.textContent='AI 生成中... '+sec+'s（點此取消）';
+  },1000);
+
+  // 點按鈕取消
+  btn.onclick=function(){
+    if(sec>0){
+      cancelled=true;clearInterval(counter);clearTimeout(hardTimer);
+      btn.textContent='✦ AI 出題（需 API Key）';
+      btn.onclick=function(){if(rvMode==='ai')startAiQuiz();else startReview();};
+    }
+  };
+
   var doneWords=[];VDB.forEach(function(d){if(S.vDone[d.week+'_'+d.day])doneWords=doneWords.concat(d.words);});
   var vocabSample=(doneWords.length>0?doneWords:VDB[0].words).sort(function(){return Math.random()-.5;}).slice(0,10).map(function(v){return v.jp+'='+v.zh;}).join(',');
   var gDone=GDB.filter(function(g){return S.gDone[g.id];}).slice(0,5).map(function(g){return g.title;}).join(',');
   var typeFilter=rvType==='all'?'假名單字文法混合':rvType==='kana'?'假名':rvType==='vocab'?'單字':'文法';
   var wrongVocab=Object.keys(S.wrongs.vocab).slice(0,5).join(',');
-  var count=Math.min(rvCount,10); // AI 最多 10 題避免逾時
-  var prompt='日文老師，出'+count+'題'+typeFilter+'選擇題（4選項，ans從0起，只回JSON）。\n學習者已學：'+vocabSample+(gDone?'\n文法：'+gDone:'')+(wrongVocab?'\n常錯：'+wrongVocab:'')+'\n格式：{"questions":[{"type":"vocab","typeLabel":"單字","q":"題目","choices":["A","B","C","D"],"ans":0,"exp":"解說"}]}';
+  var prompt='日文老師，出10題'+typeFilter+'選擇題（4選項，ans從0起，只回JSON）。\n已學：'+vocabSample+(gDone?'\n文法：'+gDone:'')+(wrongVocab?'\n常錯：'+wrongVocab:'')+'\n格式：{"questions":[{"type":"vocab","typeLabel":"單字","q":"題目","choices":["A","B","C","D"],"ans":0,"exp":"解說"}]}';
 
   ai(prompt).then(function(r){
-    clearInterval(counter);
-    btn.textContent='✦ AI 出題（需 API Key）';btn.disabled=false;
+    clearInterval(counter);clearTimeout(hardTimer);
+    if(cancelled)return;
+    btn.textContent='✦ AI 出題（需 API Key）';
+    btn.onclick=function(){if(rvMode==='ai')startAiQuiz();else startReview();};
     var txt=aiText(r);
     if(typeof txt==='string'&&txt.charAt(0)==='❌'){alert(txt);return;}
     try{
@@ -1289,8 +1359,10 @@ function startAiQuiz(){
       logR('AI 動態出題（'+rvType+'）','進行中',[]);
     }catch(e){alert('AI 出題格式錯誤，請再試一次。');}
   }).catch(function(){
-    clearInterval(counter);
-    btn.textContent='✦ AI 出題（需 API Key）';btn.disabled=false;
+    clearInterval(counter);clearTimeout(hardTimer);
+    if(cancelled)return;
+    btn.textContent='✦ AI 出題（需 API Key）';
+    btn.onclick=function(){if(rvMode==='ai')startAiQuiz();else startReview();};
     alert('連線失敗，請稍後再試。');
   });
 }
@@ -1377,4 +1449,3 @@ initFirebase();
 </script>
 </body>
 </html>
-
