@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>にほんご冒険 — 日語養成戰鬥</title>
+<style>
+  :root {
+    --bg: #14101f; --panel: #201a33; --panel2: #2a2344;
+    --ink: #f2edff; --dim: #9c92c0; --acc: #ffb64f; --acc2: #ff7aa2;
+    --good: #5fd68a; --bad: #ff6b6b; --hp: #ff5f7a; --xp: #64c8ff; --gauge: #ffd94f;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Segoe UI', 'Microsoft JhengHei', 'Yu Gothic', sans-serif;
+    min-height: 100vh; display: flex; justify-content: center;
+  }
+  #app { width: 100%; max-width: 860px; padding: 12px; }
+
+  .screen { display: none; animation: fadein .25s ease; }
+  .screen.active { display: block; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } }
+
+  button {
+    font-family: inherit; color: var(--ink); background: var(--panel2);
+    border: 1px solid #453a6e; border-radius: 12px; padding: 10px 18px;
+    font-size: 16px; cursor: pointer; transition: transform .08s, background .15s;
+  }
+  button:hover:not(:disabled) { background: #362c58; transform: translateY(-1px); }
+  button:disabled { opacity: .45; cursor: default; }
+  .btn-primary { background: linear-gradient(135deg, var(--acc), var(--acc2)); color: #241333; font-weight: 700; border: none; }
+  .btn-primary:hover:not(:disabled) { background: linear-gradient(135deg, #ffc670, #ff93b4); }
+  .dim { color: var(--dim); font-size: 14px; }
+
+  /* 素材佔位 */
+  .asset { position: relative; overflow: hidden; border-radius: 14px; }
+  .asset img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .asset-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 64px; }
+
+  /* ── 標題 ── */
+  #screen-title { text-align: center; padding-top: 24px; }
+  .title-img { width: 100%; max-width: 640px; aspect-ratio: 16/9; margin: 0 auto 8px; box-shadow: 0 12px 40px rgba(0,0,0,.5); }
+  #screen-title h1 { font-size: 34px; margin: 14px 0 4px; letter-spacing: 2px;
+    background: linear-gradient(90deg, var(--acc), var(--acc2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  #screen-title .sub { color: var(--dim); margin-bottom: 26px; }
+  .title-btns { display: flex; gap: 14px; justify-content: center; }
+  .title-btns button { font-size: 18px; padding: 13px 34px; }
+
+  /* ── 夥伴之家 ── */
+  .home-grid { display: grid; grid-template-columns: 300px 1fr; gap: 16px; margin-top: 8px; }
+  @media (max-width: 640px) { .home-grid { grid-template-columns: 1fr; } }
+  .pet-img { width: 100%; aspect-ratio: 4/5; box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+  .panel { background: var(--panel); border: 1px solid #352c58; border-radius: 16px; padding: 16px; }
+  #home-name { font-size: 26px; font-weight: 800; }
+  #home-title { color: var(--acc); margin: 2px 0 12px; font-size: 14px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin: 7px 0; font-size: 13px; }
+  .bar-row .lbl { width: 44px; color: var(--dim); }
+  .bar { flex: 1; height: 14px; background: #171226; border-radius: 8px; overflow: hidden; }
+  .bar > div { height: 100%; border-radius: 8px; transition: width .4s ease; }
+  .bar .hp { background: linear-gradient(90deg, var(--hp), #ff8fa5); }
+  .bar .xp { background: linear-gradient(90deg, var(--xp), #9fe0ff); }
+  .bar-num { width: 86px; text-align: right; color: var(--dim); }
+  #home-stats { margin: 8px 0 4px; font-size: 15px; }
+  #home-msg { background: var(--panel2); border-radius: 12px; padding: 12px 14px; margin: 12px 0; font-size: 15px; min-height: 44px; }
+  #home-inv { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
+  .food-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 14px; }
+  .food-emoji { font-size: 20px; }
+  .home-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .home-actions .btn-primary { font-size: 17px; }
+  #home-record { margin-top: 12px; font-size: 13px; color: var(--dim); }
+
+  /* ── 地圖 ── */
+  #map-regions { display: flex; flex-direction: column; gap: 14px; margin: 10px 0; }
+  .region-card { border-radius: 16px; padding: 16px; background-size: cover; background-position: center; border: 1px solid #453a6e; }
+  .region-name { font-size: 20px; font-weight: 800; text-shadow: 0 2px 8px rgba(0,0,0,.8); }
+  .region-sub { color: #e8ddff; font-size: 13px; text-shadow: 0 1px 6px rgba(0,0,0,.8); }
+  .stage-row { display: flex; gap: 8px; margin: 12px 0 8px; flex-wrap: wrap; }
+  .stage-node { width: 46px; height: 46px; border-radius: 50%; font-size: 17px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; padding: 0;
+    background: rgba(22,16,40,.85); border: 2px solid #6a5aa8; }
+  .stage-node.cleared { border-color: var(--good); background: rgba(28,52,38,.85); }
+  .stage-node.boss { border-color: var(--acc); width: 54px; height: 54px; font-size: 22px; }
+  .stage-node.locked { opacity: .4; cursor: default; }
+  .region-tail { font-size: 13px; color: #ffe9bd; text-shadow: 0 1px 6px rgba(0,0,0,.9); }
+
+  /* ── 戰鬥 ── */
+  #battle-scene { border-radius: 18px; background-size: cover; background-position: center;
+    padding: 14px; border: 1px solid #453a6e; min-height: 300px; position: relative; }
+  #battle-scene.special { animation: specialflash .6s ease; }
+  @keyframes specialflash { 0%,100% { box-shadow: none; } 40% { box-shadow: 0 0 0 4px var(--gauge), 0 0 60px 10px rgba(255,217,79,.55) inset; } }
+  #battle-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  #battle-stage-name { font-weight: 800; text-shadow: 0 2px 8px rgba(0,0,0,.9); }
+  #btn-battle-flee { font-size: 13px; padding: 6px 12px; opacity: .85; }
+  .battle-field { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+  .fighter { width: 42%; max-width: 240px; }
+  .fighter-img { width: 100%; aspect-ratio: 4/5; box-shadow: 0 8px 26px rgba(0,0,0,.5); }
+  .fighter .nameplate { font-size: 14px; font-weight: 700; text-align: center; margin-top: 6px; text-shadow: 0 2px 6px rgba(0,0,0,.9); }
+  .fighter .bar { height: 12px; margin-top: 4px; background: rgba(10,8,20,.7); }
+  .fighter .bar-num-s { font-size: 11px; text-align: center; color: #ffdce4; text-shadow: 0 1px 4px #000; }
+  .shake { animation: shake .45s ease; }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-9px) rotate(-2deg); } 45% { transform: translateX(8px) rotate(1.5deg); } 70% { transform: translateX(-5px); } }
+  .dmg-pop { position: absolute; top: 8%; left: 50%; transform: translateX(-50%); font-size: 26px; font-weight: 900;
+    color: #fff; text-shadow: 0 0 8px var(--bad), 0 2px 4px #000; animation: dmgpop .9s ease forwards; pointer-events: none; z-index: 5; }
+  .dmg-pop.big { font-size: 38px; color: var(--gauge); text-shadow: 0 0 14px var(--acc), 0 2px 4px #000; }
+  @keyframes dmgpop { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.6); } 25% { opacity: 1; transform: translate(-50%, -8px) scale(1.15); } 100% { opacity: 0; transform: translate(-50%, -46px) scale(1); } }
+  #battle-mid { display: flex; align-items: center; gap: 10px; margin: 10px 2px 4px; }
+  #battle-combo { font-weight: 800; color: var(--gauge); min-width: 90px; text-shadow: 0 1px 4px #000; }
+  .gauge-wrap { flex: 1; display: flex; align-items: center; gap: 8px; }
+  #battle-gauge-label { font-size: 12px; color: #ffe9bd; text-shadow: 0 1px 4px #000; white-space: nowrap; }
+  .gauge-bar { flex: 1; height: 10px; background: rgba(10,8,20,.7); border-radius: 6px; overflow: hidden; }
+  #battle-gauge { height: 100%; background: linear-gradient(90deg, var(--gauge), #ffef9f); transition: width .3s; }
+
+  #question-panel { background: var(--panel); border: 1px solid #453a6e; border-radius: 16px; padding: 14px 16px; margin-top: 12px; }
+  .q-head { display: flex; gap: 10px; align-items: center; font-size: 13px; color: var(--dim); }
+  #q-type { background: var(--panel2); border-radius: 6px; padding: 2px 10px; color: var(--acc); font-weight: 700; }
+  .q-timer-wrap { flex: 1; height: 6px; background: #171226; border-radius: 4px; overflow: hidden; }
+  #q-timer { height: 100%; width: 100%; background: linear-gradient(90deg, var(--good), #b8f0cd); }
+  #q-prompt { font-size: 30px; font-weight: 800; text-align: center; margin: 14px 0 4px; line-height: 1.35; }
+  #q-sub { text-align: center; color: var(--dim); font-size: 14px; margin-bottom: 14px; }
+  #q-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 560px) { #q-choices { grid-template-columns: 1fr; } }
+  .choice-btn { font-size: 17px; padding: 13px 10px; text-align: center; line-height: 1.4; }
+  .choice-btn.right { background: #1d4230; border-color: var(--good); }
+  .choice-btn.wrong { background: #4a2230; border-color: var(--bad); }
+  .q-feedback { min-height: 24px; margin-top: 12px; text-align: center; font-size: 15px; }
+  .q-feedback.good { color: var(--good); }
+  .q-feedback.bad { color: var(--bad); }
+
+  /* ── 結算 ── */
+  #screen-result { text-align: center; padding-top: 30px; }
+  .result-win { font-size: 40px; font-weight: 900; color: var(--acc); }
+  .result-lose { font-size: 40px; font-weight: 900; color: var(--dim); }
+  #result-acc { margin: 10px 0 6px; font-size: 18px; }
+  #result-lines { color: var(--dim); font-size: 15px; line-height: 1.9; margin-bottom: 10px; }
+  .evo-banner { font-size: 24px; font-weight: 800; color: var(--gauge); margin: 14px 0; animation: fadein .6s ease; }
+  .evo-banner.small { font-size: 19px; }
+  .evo-art { max-width: 220px; margin: 0 auto 10px; }
+  .result-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+
+  .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .top-nav h2 { font-size: 20px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- 標題 -->
+  <section id="screen-title" class="screen active">
+    <div id="title-art"></div>
+    <h1>にほんご冒険</h1>
+    <div class="sub">和狐狸夥伴コン一起，用日語打倒言靈妖怪！— 養成 × 戰鬥 × 旅遊日語</div>
+    <div class="title-btns">
+      <button id="btn-continue" class="btn-primary">▶ 繼續旅程</button>
+      <button id="btn-new">🌱 新的旅程</button>
+    </div>
+  </section>
+
+  <!-- 夥伴之家 -->
+  <section id="screen-home" class="screen">
+    <div class="top-nav">
+      <h2>🏠 夥伴之家</h2>
+      <button id="btn-home-title" style="font-size:13px;padding:6px 12px">標題畫面</button>
+    </div>
+    <div class="home-grid">
+      <div id="home-pet"></div>
+      <div class="panel">
+        <div id="home-name"></div>
+        <div id="home-title"></div>
+        <div class="bar-row"><span class="lbl">HP</span><div class="bar"><div class="hp" id="home-hp"></div></div><span class="bar-num" id="home-hp-num"></span></div>
+        <div class="bar-row"><span class="lbl">XP</span><div class="bar"><div class="xp" id="home-xp"></div></div><span class="bar-num" id="home-xp-num"></span></div>
+        <div class="bar-row"><span class="lbl">好感</span><span id="home-aff-num"></span></div>
+        <div id="home-stats"></div>
+        <div id="home-msg"></div>
+        <div class="dim">🎒 背包（點食物餵コン）</div>
+        <div id="home-inv"></div>
+        <div class="home-actions">
+          <button id="btn-go-map" class="btn-primary">🗾 出發冒險</button>
+          <button id="btn-review">📖 復習戰</button>
+        </div>
+        <div id="home-record"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 地圖 -->
+  <section id="screen-map" class="screen">
+    <div class="top-nav">
+      <h2>🗾 冒險地圖</h2>
+      <button id="btn-map-back" style="font-size:13px;padding:6px 12px">← 回夥伴之家</button>
+    </div>
+    <div id="map-regions"></div>
+  </section>
+
+  <!-- 戰鬥 -->
+  <section id="screen-battle" class="screen">
+    <div id="battle-scene">
+      <div id="battle-top">
+        <div id="battle-stage-name"></div>
+        <button id="btn-battle-flee">🏃 逃跑</button>
+      </div>
+      <div class="battle-field">
+        <div class="fighter">
+          <div id="battle-pet-art" style="position:relative"></div>
+          <div class="nameplate" id="battle-pet-name"></div>
+          <div class="bar"><div class="hp" id="battle-pet-hp" style="background:linear-gradient(90deg,var(--good),#9fe8b8)"></div></div>
+          <div class="bar-num-s" id="battle-pet-hp-num"></div>
+        </div>
+        <div class="fighter">
+          <div id="battle-enemy-art" style="position:relative"></div>
+          <div class="nameplate" id="battle-enemy-name"></div>
+          <div class="bar"><div class="hp" id="battle-enemy-hp"></div></div>
+          <div class="bar-num-s" id="battle-enemy-hp-num"></div>
+        </div>
+      </div>
+      <div id="battle-mid">
+        <div id="battle-combo"></div>
+        <div class="gauge-wrap">
+          <span id="battle-gauge-label">必殺技</span>
+          <div class="gauge-bar"><div id="battle-gauge"></div></div>
+        </div>
+      </div>
+    </div>
+    <div id="question-panel">
+      <div class="q-head">
+        <span id="q-type"></span>
+        <span id="q-num"></span>
+        <div class="q-timer-wrap"><div id="q-timer"></div></div>
+      </div>
+      <div id="q-prompt"></div>
+      <div id="q-sub"></div>
+      <div id="q-choices"></div>
+      <div id="q-feedback" class="q-feedback"></div>
+    </div>
+  </section>
+
+  <!-- 結算 -->
+  <section id="screen-result" class="screen">
+    <div id="result-title"></div>
+    <div id="result-acc"></div>
+    <div id="result-lines"></div>
+    <div id="result-evo"></div>
+    <div class="result-btns">
+      <button id="btn-next-stage" class="btn-primary"></button>
+      <button id="btn-result-map">🗾 冒險地圖</button>
+      <button id="btn-result-home">🏠 夥伴之家</button>
+    </div>
+  </section>
+
+</div>
+<script src="js/data.js?v=2"></script>
+<script src="js/assets.js?v=2"></script>
+<script src="js/engine.js?v=2"></script>
+<script src="js/game.js?v=2"></script>
+</body>
+</html>
