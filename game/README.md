@@ -20,9 +20,9 @@
 |---|---|
 | `js/data.js` | 學習資料，從原專案 nihongo.html 抽出（HIRA/KATA 假名、VDB 420 單字、GDB 12 文法、REF 速查） |
 | `js/engine.js` | 純邏輯：出題（含干擾項）、戰鬥數值、養成成長曲線、關卡表、存檔。不碰 DOM |
-| `js/assets.js` | 素材載入：有圖用圖，缺圖自動 fallback 成漸層＋emoji |
+| `js/assets.js` | 素材載入：只有 4 張背景用圖；角色/敵人走漸層＋emoji 卡片（`noimg`，使用者不要 AI 立繪） |
 | `js/game.js` | UI 與流程：五畫面（標題/夥伴之家/地圖/戰鬥/結算）、WebAudio 合成音效 |
-| `tools/gen_images.py` | 用本機 SD Forge API（AOM3A3）生成 17 張素材到 `assets/img/` |
+| `tools/gen_images.py` | 用本機 SD Forge API（AOM3A3）生背景。生物類提示詞會被拉成少女圖，已棄用該部分 |
 
 ## 測試掛鉤
 

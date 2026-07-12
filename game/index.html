@@ -33,10 +33,15 @@
   .btn-primary:hover:not(:disabled) { background: linear-gradient(135deg, #ffc670, #ff93b4); }
   .dim { color: var(--dim); font-size: 14px; }
 
-  /* 素材佔位 */
+  /* 素材佔位：角色/敵人走 emoji 卡片風（使用者不要 AI 立繪） */
   .asset { position: relative; overflow: hidden; border-radius: 14px; }
   .asset img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .asset-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 64px; }
+  .asset-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 64px; filter: drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
+  .asset-emoji::before { content: ''; position: absolute; width: 62%; aspect-ratio: 1;
+    border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.32), transparent 70%); }
+  .pet-img .asset-emoji, .evo-art .asset-emoji { font-size: 120px; }
+  .fighter-img .asset-emoji { font-size: 96px; }
 
   /* ── 標題 ── */
   #screen-title { text-align: center; padding-top: 24px; }
@@ -248,9 +253,9 @@
   </section>
 
 </div>
-<script src="js/data.js?v=2"></script>
-<script src="js/assets.js?v=2"></script>
-<script src="js/engine.js?v=2"></script>
-<script src="js/game.js?v=2"></script>
+<script src="js/data.js?v=3"></script>
+<script src="js/assets.js?v=3"></script>
+<script src="js/engine.js?v=3"></script>
+<script src="js/game.js?v=3"></script>
 </body>
 </html>
