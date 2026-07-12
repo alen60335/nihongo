@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>旅日小夥伴 · 日文電子雞</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fdf6ec;
+  --surface:#ffffff;
+  --border:#f0e2cd;
+  --border2:#e3cfae;
+  --text:#4a3626;
+  --text2:#8a7259;
+  --text3:#b8a488;
+  --accent:#e8874f;
+  --accent-dark:#d06e35;
+  --green:#7cb356;
+  --pink:#f2a0b5;
+  --blue:#7fb5d5;
+  --danger:#d95f5f;
+  --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:16px;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC','Noto Sans JP',sans-serif;min-height:100vh}
+.app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding-bottom:70px}
+
+/* ── HEADER ── */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px}
+.hdr-name{font-size:17px;font-weight:900;letter-spacing:.5px}
+.hdr-name .lv{font-size:11px;font-weight:700;color:#fff;background:var(--accent);border-radius:99px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+.hdr-right{display:flex;gap:6px;font-size:12px;color:var(--text2)}
+.hdr-chip{background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:3px 10px;font-weight:700}
+
+/* ── SCENE ── */
+.scene{margin:6px 14px 0;border-radius:20px;border:1px solid var(--border);overflow:hidden;position:relative;background:linear-gradient(180deg,#bfe3f5 0%,#e8f5fb 55%,#f7ecd8 55%,#f2e2c4 100%)}
+.scene.night{background:linear-gradient(180deg,#2f3a5c 0%,#5c6d99 55%,#8a7a63 55%,#7a6b55 100%)}
+.scene-loc{position:absolute;top:10px;left:12px;background:rgba(255,255,255,.85);border-radius:99px;padding:4px 12px;font-size:12px;font-weight:700;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.08);z-index:3}
+.scene-deco{position:absolute;top:36px;right:14px;font-size:44px;opacity:.9;z-index:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.1))}
+.scene-cloud{position:absolute;font-size:26px;opacity:.8;animation:drift 26s linear infinite;z-index:1}
+@keyframes drift{from{transform:translateX(-60px)}to{transform:translateX(480px)}}
+.pet-area{height:270px;display:flex;align-items:flex-end;justify-content:center;position:relative}
+.pet-wrap{width:190px;height:190px;margin-bottom:14px;cursor:pointer;position:relative;z-index:2;animation:idle 2.6s ease-in-out infinite;user-select:none}
+.pet-wrap.eat{animation:chomp .35s ease-in-out 4}
+.pet-wrap.joy{animation:jump .5s ease-in-out 2}
+.pet-wrap.sadmove{animation:wilt 2.8s ease-in-out infinite}
+@keyframes idle{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-7px) scale(1.015)}}
+@keyframes chomp{0%,100%{transform:scale(1)}50%{transform:scale(1.06,.94)}}
+@keyframes jump{0%,100%{transform:translateY(0)}45%{transform:translateY(-26px) rotate(-4deg)}}
+@keyframes wilt{0%,100%{transform:translateY(2px) rotate(-1.5deg)}50%{transform:translateY(4px) rotate(1.5deg)}}
+.bubble{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:#fff;border:1.5px solid var(--border2);border-radius:14px;padding:8px 14px;font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;opacity:0;transition:opacity .25s;z-index:4;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.bubble.on{opacity:1}
+.bubble .rd{font-size:10px;color:var(--text3);font-weight:400;display:block;text-align:center}
+.bubble:after{content:'';position:absolute;bottom:-7px;left:50%;margin-left:-6px;border:6px solid transparent;border-top-color:#fff;border-bottom:0}
+.fx{position:absolute;font-size:22px;z-index:5;pointer-events:none;animation:floatup 1s ease-out forwards}
+@keyframes floatup{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-46px) scale(1.4)}}
+.ground{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:13px;letter-spacing:14px;opacity:.5;z-index:1}
+
+/* ── STATS ── */
+.stats{margin:12px 14px 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px}
+.stat-row{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.stat-row:last-child{margin-bottom:0}
+.stat-ic{font-size:16px;width:22px;text-align:center}
+.stat-label{font-size:12px;font-weight:700;color:var(--text2);width:38px}
+.stat-bar{flex:1;height:12px;background:#f3ead9;border-radius:99px;overflow:hidden}
+.stat-fill{height:100%;border-radius:99px;transition:width .5s ease}
+.stat-val{font-size:11px;font-weight:700;color:var(--text3);width:30px;text-align:right}
+.xp-row{display:flex;align-items:center;gap:8px;margin-top:11px;padding-top:11px;border-top:1px dashed var(--border)}
+.xp-label{font-size:11px;font-weight:700;color:var(--text3)}
+.xp-bar{flex:1;height:7px;background:#f3ead9;border-radius:99px;overflow:hidden}
+.xp-fill{height:100%;background:linear-gradient(90deg,#f5c445,#e8874f);border-radius:99px;transition:width .5s}
+
+/* ── INVENTORY ── */
+.inv{margin:10px 14px 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px}
+.inv-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.1em;margin-bottom:8px}
+.inv-title b{color:var(--accent);font-weight:900}
+.inv-row{display:flex;gap:7px;flex-wrap:wrap;min-height:44px;align-items:center}
+.inv-empty{font-size:12px;color:var(--text3)}
+.food{width:46px;height:46px;border-radius:12px;background:#fdf6ec;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;position:relative;transition:transform .12s,border-color .12s}
+.food:hover{transform:scale(1.08);border-color:var(--accent)}
+.food:active{transform:scale(.94)}
+.food .cnt{position:absolute;top:-5px;right:-5px;background:var(--accent);color:#fff;font-size:9px;font-weight:900;border-radius:99px;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+
+/* ── ACTIONS ── */
+.actions{display:flex;gap:9px;margin:12px 14px 0}
+.act{flex:1;border:none;border-radius:14px;padding:13px 6px;font-size:14px;font-weight:900;font-family:inherit;cursor:pointer;transition:transform .1s,filter .15s;color:#fff;display:flex;flex-direction:column;align-items:center;gap:2px}
+.act:active{transform:scale(.96)}
+.act .sub{font-size:10px;font-weight:400;opacity:.85}
+.act.quiz{background:var(--accent)}
+.act.pat{background:var(--pink)}
+.act.quiz:hover,.act.pat:hover{filter:brightness(1.06)}
+
+/* ── PAGES / NAV ── */
+.page{display:none;flex:1}
+.page.on{display:block}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);z-index:100}
+.nav-in{max-width:480px;margin:0 auto;display:flex}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 10px;cursor:pointer;color:var(--text3);font-size:10px;font-weight:700;user-select:none;transition:color .12s}
+.nav-item.on{color:var(--accent)}
+.nav-ic{font-size:19px}
+
+/* ── QUIZ ── */
+.q-wrap{padding:16px}
+.q-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.q-prog{font-size:12px;font-weight:700;color:var(--text2)}
+.q-quit{font-size:12px;color:var(--text3);cursor:pointer;text-decoration:underline}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:30px 20px;text-align:center;margin-bottom:14px}
+.q-theme{font-size:11px;color:var(--text3);font-weight:700;letter-spacing:.1em;margin-bottom:10px}
+.q-word{font-size:30px;font-weight:900;font-family:'Noto Sans JP','Noto Sans TC',sans-serif;line-height:1.4}
+.q-rd{font-size:13px;color:var(--text2);margin-top:6px;min-height:18px}
+.q-opts{display:flex;flex-direction:column;gap:9px}
+.q-opt{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;font-size:15px;font-weight:700;cursor:pointer;transition:all .12s;text-align:center;font-family:inherit;color:var(--text)}
+.q-opt:hover{border-color:var(--accent)}
+.q-opt:active{transform:scale(.98)}
+.q-opt.good{background:#eef7e6;border-color:var(--green);color:#3f6b25}
+.q-opt.bad{background:#fdeeee;border-color:var(--danger);color:var(--danger)}
+.q-opt.dim{opacity:.45;pointer-events:none}
+.q-fb{text-align:center;margin-top:13px;font-size:14px;font-weight:700;min-height:22px}
+.q-reward{background:#fff8ec;border:1.5px dashed var(--border2);border-radius:20px;padding:26px 18px;text-align:center}
+.q-reward .big{font-size:42px;margin-bottom:8px}
+.q-reward h3{font-size:18px;font-weight:900;margin-bottom:6px}
+.q-reward p{font-size:13px;color:var(--text2);line-height:1.7}
+.q-reward .foods{font-size:28px;letter-spacing:6px;margin:12px 0 4px}
+.btn{display:inline-block;border:none;background:var(--accent);color:#fff;font-family:inherit;font-size:14px;font-weight:900;border-radius:99px;padding:12px 30px;cursor:pointer;margin-top:14px;transition:transform .1s}
+.btn:active{transform:scale(.96)}
+.btn.ghost{background:transparent;color:var(--text2);border:1.5px solid var(--border2)}
+
+/* ── JOURNEY ── */
+.j-wrap{padding:16px}
+.j-title{font-size:18px;font-weight:900;margin-bottom:3px}
+.j-sub{font-size:12px;color:var(--text2);margin-bottom:16px}
+.j-stop{display:flex;gap:13px;position:relative;padding-bottom:22px}
+.j-stop:last-child{padding-bottom:0}
+.j-line{position:absolute;left:22px;top:46px;bottom:0;width:3px;background:var(--border);border-radius:99px}
+.j-stop.done .j-line{background:var(--accent)}
+.j-dot{width:46px;height:46px;border-radius:50%;background:#fff;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;z-index:1}
+.j-stop.done .j-dot{border-color:var(--accent);background:#fff4ea}
+.j-stop.now .j-dot{border-color:var(--accent);background:var(--accent);box-shadow:0 0 0 4px rgba(232,135,79,.2)}
+.j-stop.lock .j-dot{filter:grayscale(1);opacity:.5}
+.j-info{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:11px 14px}
+.j-stop.now .j-info{border-color:var(--accent)}
+.j-stop.lock .j-info{opacity:.55}
+.j-name{font-size:14px;font-weight:900}
+.j-name .jp{font-size:11px;color:var(--text3);font-weight:400;margin-left:6px}
+.j-desc{font-size:12px;color:var(--text2);margin-top:3px;line-height:1.6}
+.j-req{font-size:11px;color:var(--text3);margin-top:5px;font-weight:700}
+.j-req b{color:var(--accent)}
+.j-now-tag{font-size:10px;color:#fff;background:var(--accent);border-radius:99px;padding:2px 8px;font-weight:900;margin-left:6px;vertical-align:1px}
+
+/* ── STATS PAGE ── */
+.s-wrap{padding:16px}
+.s-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+.s-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center}
+.s-num{font-size:23px;font-weight:900;color:var(--accent)}
+.s-lbl{font-size:11px;color:var(--text2);font-weight:700;margin-top:2px}
+.s-sec{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
+.s-sec h4{font-size:12px;font-weight:900;color:var(--text2);letter-spacing:.08em;margin-bottom:10px}
+.s-wordrow{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px dashed var(--border);font-size:13px}
+.s-wordrow:last-child{border-bottom:none}
+.s-wordrow .jp{font-weight:700;font-family:'Noto Sans JP',sans-serif}
+.s-wordrow .zh{color:var(--text2);font-size:12px}
+.s-empty{font-size:12px;color:var(--text3);text-align:center;padding:10px 0}
+.s-danger{width:100%;background:transparent;border:1.5px solid var(--danger);color:var(--danger);border-radius:14px;padding:12px;font-size:13px;font-weight:900;font-family:inherit;cursor:pointer}
+
+/* ── MODAL / TOAST ── */
+.modal{position:fixed;inset:0;background:rgba(74,54,38,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(3px)}
+.modal.on{display:flex}
+.modal-box{background:#fff;border-radius:22px;padding:30px 24px;max-width:360px;width:100%;text-align:center;animation:pop .3s ease}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-box .big{font-size:52px;margin-bottom:10px}
+.modal-box h3{font-size:19px;font-weight:900;margin-bottom:8px}
+.modal-box p{font-size:13px;color:var(--text2);line-height:1.8}
+.modal-box input{width:100%;margin-top:14px;padding:12px 14px;border:1.5px solid var(--border2);border-radius:12px;font-size:15px;font-family:inherit;text-align:center;outline:none;font-weight:700;color:var(--text)}
+.modal-box input:focus{border-color:var(--accent)}
+.toast{position:fixed;bottom:78px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--text);color:#fff;font-size:13px;font-weight:700;border-radius:99px;padding:9px 20px;z-index:300;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HOME -->
+  <div class="page on" id="pg-home">
+    <div class="hdr">
+      <div class="hdr-name"><span id="h-name">ぽち</span><span class="lv" id="h-lv">Lv.1</span></div>
+      <div class="hdr-right">
+        <div class="hdr-chip">🔥 <span id="h-streak">0</span> 天</div>
+        <div class="hdr-chip">⭐ <span id="h-correct">0</span></div>
+      </div>
+    </div>
+
+    <div class="scene" id="scene">
+      <div class="scene-loc" id="scene-loc">📍 成田機場</div>
+      <div class="scene-cloud" style="top:18px">☁️</div>
+      <div class="scene-cloud" style="top:58px;animation-delay:-12s">☁️</div>
+      <div class="scene-deco" id="scene-deco">🛫</div>
+      <div class="pet-area">
+        <div class="bubble" id="bubble"></div>
+        <div class="pet-wrap" id="pet" onclick="patPet()"></div>
+        <div class="ground">🌱🌼🌱</div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-row">
+        <div class="stat-ic">🍙</div><div class="stat-label">滿腹</div>
+        <div class="stat-bar"><div class="stat-fill" id="bar-hunger" style="background:var(--green)"></div></div>
+        <div class="stat-val" id="val-hunger">80</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-ic">💛</div><div class="stat-label">心情</div>
+        <div class="stat-bar"><div class="stat-fill" id="bar-mood" style="background:var(--pink)"></div></div>
+        <div class="stat-val" id="val-mood">80</div>
+      </div>
+      <div class="xp-row">
+        <div class="xp-label" id="xp-label">EXP</div>
+        <div class="xp-bar"><div class="xp-fill" id="bar-xp"></div></div>
+      </div>
+    </div>
+
+    <div class="inv">
+      <div class="inv-title">背包（答對測驗可獲得食物 → 點食物餵食）</div>
+      <div class="inv-row" id="inv-row"></div>
+    </div>
+
+    <div class="actions">
+      <button class="act quiz" onclick="startQuiz()">📝 測驗覓食<span class="sub">答對拿食物</span></button>
+      <button class="act pat" onclick="patPet()">🤚 摸摸牠<span class="sub">心情 +</span></button>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="page" id="pg-quiz">
+    <div class="q-wrap" id="q-wrap"></div>
+  </div>
+
+  <!-- JOURNEY -->
+  <div class="page" id="pg-journey">
+    <div class="j-wrap">
+      <div class="j-title">🗾 日本旅程</div>
+      <div class="j-sub">累積答對題數，帶著小夥伴一路玩遍日本！</div>
+      <div id="j-list"></div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="page" id="pg-stats">
+    <div class="s-wrap">
+      <div class="j-title">📊 成長紀錄</div>
+      <div class="j-sub" id="s-sub">和小夥伴一起努力的足跡</div>
+      <div class="s-grid">
+        <div class="s-card"><div class="s-num" id="s-days">0</div><div class="s-lbl">陪伴天數</div></div>
+        <div class="s-card"><div class="s-num" id="s-streak">0</div><div class="s-lbl">連續學習</div></div>
+        <div class="s-card"><div class="s-num" id="s-correct">0</div><div class="s-lbl">累積答對</div></div>
+        <div class="s-card"><div class="s-num" id="s-acc">--%</div><div class="s-lbl">正確率</div></div>
+        <div class="s-card"><div class="s-num" id="s-fed">0</div><div class="s-lbl">餵食次數</div></div>
+        <div class="s-card"><div class="s-num" id="s-words">0</div><div class="s-lbl">學過的單字</div></div>
+      </div>
+      <div class="s-sec">
+        <h4>😅 最常答錯（多練習牠會更開心）</h4>
+        <div id="s-wrongs"><div class="s-empty">目前沒有紀錄，太棒了！</div></div>
+      </div>
+      <button class="s-danger" onclick="resetAll()">重新養一隻（清除所有紀錄）</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav"><div class="nav-in">
+  <div class="nav-item on" data-pg="home" onclick="go('home')"><div class="nav-ic">🐕</div>小夥伴</div>
+  <div class="nav-item" data-pg="quiz" onclick="go('quiz')"><div class="nav-ic">📝</div>測驗</div>
+  <div class="nav-item" data-pg="journey" onclick="go('journey')"><div class="nav-ic">🗾</div>旅程</div>
+  <div class="nav-item" data-pg="stats" onclick="go('stats')"><div class="nav-ic">📊</div>紀錄</div>
+</div></div>
+
+<!-- NAME MODAL -->
+<div class="modal" id="name-modal">
+  <div class="modal-box">
+    <div class="big">🥚</div>
+    <h3>撿到一顆蛋！</h3>
+    <p>裡面好像有個想去日本旅行的小生命。<br>用日文測驗餵養牠，帶牠環遊日本吧！<br>先幫牠取個名字：</p>
+    <input id="name-input" maxlength="8" placeholder="ぽち" value="ぽち">
+    <button class="btn" onclick="confirmName()">開始養成 🎉</button>
+  </div>
+</div>
+
+<!-- EVENT MODAL -->
+<div class="modal" id="ev-modal" onclick="closeEv(event)">
+  <div class="modal-box">
+    <div class="big" id="ev-big">🎉</div>
+    <h3 id="ev-title"></h3>
+    <p id="ev-text"></p>
+    <button class="btn" onclick="closeEv()">太好了！</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var VDB=[
+  {week:1,day:1,theme:'打招呼',words:[{jp:'おはよう',rd:'ohayou',zh:'早安（輕鬆）'},{jp:'おはようございます',rd:'ohayou gozaimasu',zh:'早安（正式）'},{jp:'こんにちは',rd:'konnichiwa',zh:'你好／午安'},{jp:'こんばんは',rd:'konbanwa',zh:'晚安（問候）'},{jp:'おやすみなさい',rd:'oyasumi nasai',zh:'晚安（睡前）'},{jp:'さようなら',rd:'sayounara',zh:'再見'},{jp:'またね',rd:'matane',zh:'拜拜'},{jp:'はじめまして',rd:'hajimemashite',zh:'初次見面'},{jp:'よろしく',rd:'yoroshiku',zh:'請多指教（輕鬆）'},{jp:'よろしくおねがいします',rd:'yoroshiku onegaishimasu',zh:'請多指教（正式）'},{jp:'おげんきですか',rd:'ogenki desu ka',zh:'你好嗎？'},{jp:'げんきです',rd:'genki desu',zh:'我很好'},{jp:'ありがとう',rd:'arigatou',zh:'謝謝（輕鬆）'},{jp:'ありがとうございます',rd:'arigatou gozaimasu',zh:'謝謝（正式）'},{jp:'どういたしまして',rd:'dou itashimashite',zh:'不客氣'}]},
+  {week:1,day:2,theme:'基本應答',words:[{jp:'はい',rd:'hai',zh:'是'},{jp:'いいえ',rd:'iie',zh:'不是'},{jp:'そうです',rd:'sou desu',zh:'對、是的'},{jp:'ちがいます',rd:'chigaimasu',zh:'不對'},{jp:'わかりました',rd:'wakarimashita',zh:'我明白了'},{jp:'わかりません',rd:'wakarimasen',zh:'我不懂'},{jp:'しりません',rd:'shirimasen',zh:'我不知道'},{jp:'すみません',rd:'sumimasen',zh:'不好意思'},{jp:'ごめんなさい',rd:'gomen nasai',zh:'對不起'},{jp:'だいじょうぶ',rd:'daijoubu',zh:'沒關係'},{jp:'もういちど',rd:'mou ichido',zh:'再說一次'},{jp:'ゆっくり',rd:'yukkuri',zh:'慢慢地'},{jp:'にほんご',rd:'nihongo',zh:'日文'},{jp:'えいご',rd:'eigo',zh:'英文'},{jp:'ちゅうごくご',rd:'chuugokugo',zh:'中文'}]},
+  {week:1,day:3,theme:'數字1-15',words:[{jp:'いち',rd:'ichi',zh:'1'},{jp:'に',rd:'ni',zh:'2'},{jp:'さん',rd:'san',zh:'3'},{jp:'し／よん',rd:'shi/yon',zh:'4'},{jp:'ご',rd:'go',zh:'5'},{jp:'ろく',rd:'roku',zh:'6'},{jp:'しち／なな',rd:'shichi/nana',zh:'7'},{jp:'はち',rd:'hachi',zh:'8'},{jp:'く／きゅう',rd:'ku/kyuu',zh:'9'},{jp:'じゅう',rd:'juu',zh:'10'},{jp:'じゅういち',rd:'juuichi',zh:'11'},{jp:'じゅうに',rd:'juuni',zh:'12'},{jp:'じゅうさん',rd:'juusan',zh:'13'},{jp:'じゅうし',rd:'juushi',zh:'14'},{jp:'じゅうご',rd:'juugo',zh:'15'}]},
+  {week:1,day:4,theme:'數字16-大數',words:[{jp:'じゅうろく',rd:'juuroku',zh:'16'},{jp:'じゅうなな',rd:'juunana',zh:'17'},{jp:'じゅうはち',rd:'juuhachi',zh:'18'},{jp:'じゅうく',rd:'juuku',zh:'19'},{jp:'にじゅう',rd:'nijuu',zh:'20'},{jp:'さんじゅう',rd:'sanjuu',zh:'30'},{jp:'よんじゅう',rd:'yonjuu',zh:'40'},{jp:'ごじゅう',rd:'gojuu',zh:'50'},{jp:'ひゃく',rd:'hyaku',zh:'100'},{jp:'にひゃく',rd:'nihyaku',zh:'200'},{jp:'ごひゃく',rd:'gohyaku',zh:'500'},{jp:'せん',rd:'sen',zh:'1000'},{jp:'にせん',rd:'nisen',zh:'2000'},{jp:'ごせん',rd:'gosen',zh:'5000'},{jp:'いちまん',rd:'ichiman',zh:'10000'}]},
+  {week:1,day:5,theme:'時間日期',words:[{jp:'いまなんじですか',rd:'ima nanji desu ka',zh:'現在幾點？'},{jp:'ごぜん',rd:'gozen',zh:'上午'},{jp:'ごご',rd:'gogo',zh:'下午'},{jp:'じ',rd:'ji',zh:'點（時刻）'},{jp:'ふん／ぷん',rd:'fun/pun',zh:'分鐘'},{jp:'きょう',rd:'kyou',zh:'今天'},{jp:'あした',rd:'ashita',zh:'明天'},{jp:'きのう',rd:'kinou',zh:'昨天'},{jp:'なんようび',rd:'nan youbi',zh:'星期幾？'},{jp:'げつようび',rd:'getsuyoubi',zh:'星期一'},{jp:'かようび',rd:'kayoubi',zh:'星期二'},{jp:'すいようび',rd:'suiyoubi',zh:'星期三'},{jp:'もくようび',rd:'mokuyoubi',zh:'星期四'},{jp:'きんようび',rd:'kinyoubi',zh:'星期五'},{jp:'どようび',rd:'doyoubi',zh:'星期六'}]},
+  {week:1,day:6,theme:'地點方向',words:[{jp:'どこ',rd:'doko',zh:'哪裡'},{jp:'ここ',rd:'koko',zh:'這裡'},{jp:'そこ',rd:'soko',zh:'那裡'},{jp:'あそこ',rd:'asoko',zh:'那邊'},{jp:'みぎ',rd:'migi',zh:'右邊'},{jp:'ひだり',rd:'hidari',zh:'左邊'},{jp:'まっすぐ',rd:'massugu',zh:'直走'},{jp:'まえ',rd:'mae',zh:'前面'},{jp:'うしろ',rd:'ushiro',zh:'後面'},{jp:'となり',rd:'tonari',zh:'旁邊'},{jp:'ちかく',rd:'chikaku',zh:'附近'},{jp:'とおい',rd:'tooi',zh:'遠的'},{jp:'ちかい',rd:'chikai',zh:'近的'},{jp:'きた',rd:'kita',zh:'北'},{jp:'みなみ',rd:'minami',zh:'南'}]},
+  {week:1,day:7,theme:'疑問詞',words:[{jp:'なに／なん',rd:'nani/nan',zh:'什麼'},{jp:'だれ',rd:'dare',zh:'誰'},{jp:'いつ',rd:'itsu',zh:'什麼時候'},{jp:'どこ',rd:'doko',zh:'哪裡'},{jp:'どれ',rd:'dore',zh:'哪一個'},{jp:'どう',rd:'dou',zh:'怎樣'},{jp:'なぜ',rd:'naze',zh:'為什麼'},{jp:'いくら',rd:'ikura',zh:'多少錢'},{jp:'いくつ',rd:'ikutsu',zh:'幾個'},{jp:'なんにん',rd:'nannin',zh:'幾個人'},{jp:'なんじ',rd:'nanji',zh:'幾點'},{jp:'なんにち',rd:'nannichi',zh:'幾號'},{jp:'どんな',rd:'donna',zh:'什麼樣的'},{jp:'どのくらい',rd:'dono kurai',zh:'多久'},{jp:'なんで',rd:'nande',zh:'為什麼（口語）'}]},
+  {week:2,day:1,theme:'食物',words:[{jp:'ごはん',rd:'gohan',zh:'米飯'},{jp:'すし',rd:'sushi',zh:'壽司'},{jp:'ラーメン',rd:'raamen',zh:'拉麵'},{jp:'てんぷら',rd:'tenpura',zh:'天婦羅'},{jp:'そば',rd:'soba',zh:'蕎麥麵'},{jp:'うどん',rd:'udon',zh:'烏龍麵'},{jp:'やきとり',rd:'yakitori',zh:'烤雞串'},{jp:'たこやき',rd:'takoyaki',zh:'章魚燒'},{jp:'おにぎり',rd:'onigiri',zh:'飯糰'},{jp:'べんとう',rd:'bentou',zh:'便當'},{jp:'みそしる',rd:'misoshiru',zh:'味噌湯'},{jp:'さしみ',rd:'sashimi',zh:'生魚片'},{jp:'とんかつ',rd:'tonkatsu',zh:'豬排'},{jp:'カレー',rd:'karee',zh:'咖哩'},{jp:'アイスクリーム',rd:'aisu kuriimu',zh:'冰淇淋'}]},
+  {week:2,day:2,theme:'飲料',words:[{jp:'みず',rd:'mizu',zh:'水'},{jp:'おちゃ',rd:'ocha',zh:'茶'},{jp:'こうちゃ',rd:'koucha',zh:'紅茶'},{jp:'コーヒー',rd:'koohii',zh:'咖啡'},{jp:'ジュース',rd:'juusu',zh:'果汁'},{jp:'ビール',rd:'biiru',zh:'啤酒'},{jp:'さけ',rd:'sake',zh:'日本酒'},{jp:'コーラ',rd:'koora',zh:'可樂'},{jp:'ミルク',rd:'miruku',zh:'牛奶'},{jp:'ぬるい',rd:'nurui',zh:'溫的'},{jp:'つめたい',rd:'tsumetai',zh:'冷的'},{jp:'あつい',rd:'atsui',zh:'熱的'},{jp:'あまい',rd:'amai',zh:'甜的'},{jp:'からい',rd:'karai',zh:'辣的'},{jp:'しおからい',rd:'shiokarai',zh:'鹹的'}]},
+  {week:2,day:3,theme:'餐廳點餐',words:[{jp:'メニュー',rd:'menyuu',zh:'菜單'},{jp:'ちゅうもん',rd:'chuumon',zh:'點餐'},{jp:'おすすめ',rd:'osusume',zh:'推薦'},{jp:'これ',rd:'kore',zh:'這個'},{jp:'ひとつ',rd:'hitotsu',zh:'一個'},{jp:'ふたつ',rd:'futatsu',zh:'兩個'},{jp:'みっつ',rd:'mittsu',zh:'三個'},{jp:'ください',rd:'kudasai',zh:'請給我'},{jp:'おなじもの',rd:'onaji mono',zh:'一樣的'},{jp:'セット',rd:'setto',zh:'套餐'},{jp:'おいしい',rd:'oishii',zh:'好吃'},{jp:'まずい',rd:'mazui',zh:'難吃'},{jp:'アレルギー',rd:'arerugii',zh:'過敏'},{jp:'ベジタリアン',rd:'bejitarian',zh:'素食者'},{jp:'もってきてください',rd:'motte kite kudasai',zh:'請拿過來'}]},
+  {week:2,day:4,theme:'結帳付款',words:[{jp:'おかいけい',rd:'okaikei',zh:'買單'},{jp:'レシート',rd:'reshiito',zh:'收據'},{jp:'クレジットカード',rd:'kurejitto kaado',zh:'信用卡'},{jp:'げんきん',rd:'genkin',zh:'現金'},{jp:'おつり',rd:'otsuri',zh:'找零'},{jp:'わりかん',rd:'warikan',zh:'AA制'},{jp:'ねだん',rd:'nedan',zh:'價格'},{jp:'たかい',rd:'takai',zh:'貴的'},{jp:'やすい',rd:'yasui',zh:'便宜的'},{jp:'むりょう',rd:'muryou',zh:'免費'},{jp:'わりびき',rd:'waribiki',zh:'折扣'},{jp:'ポイント',rd:'pointo',zh:'點數'},{jp:'ぜいきん',rd:'zeikin',zh:'稅金'},{jp:'サービスりょう',rd:'saabisu ryou',zh:'服務費'},{jp:'ふくろ',rd:'fukuro',zh:'袋子'}]},
+  {week:2,day:5,theme:'便利商店',words:[{jp:'コンビニ',rd:'konbini',zh:'便利商店'},{jp:'スーパー',rd:'suupaa',zh:'超市'},{jp:'ドラッグストア',rd:'doraggu sutoa',zh:'藥妝店'},{jp:'レジ',rd:'reji',zh:'收銀台'},{jp:'あたためますか',rd:'atatamemasu ka',zh:'需要加熱嗎？'},{jp:'はし',rd:'hashi',zh:'筷子'},{jp:'スプーン',rd:'supuun',zh:'湯匙'},{jp:'フォーク',rd:'fooku',zh:'叉子'},{jp:'しょうひきげん',rd:'shouhikigen',zh:'賞味期限'},{jp:'ぎゅうにゅう',rd:'gyuunyuu',zh:'牛奶'},{jp:'たまご',rd:'tamago',zh:'雞蛋'},{jp:'パン',rd:'pan',zh:'麵包'},{jp:'おにぎり',rd:'onigiri',zh:'飯糰'},{jp:'べんとう',rd:'bentou',zh:'便當'},{jp:'ジュース',rd:'juusu',zh:'果汁'}]},
+  {week:2,day:6,theme:'購物',words:[{jp:'みせ',rd:'mise',zh:'店'},{jp:'まけてください',rd:'makete kudasai',zh:'算便宜一點'},{jp:'もうすこしやすく',rd:'mou sukoshi yasuku',zh:'再便宜一點'},{jp:'これはいくらですか',rd:'kore wa ikura desu ka',zh:'這個多少錢？'},{jp:'たくさんかいます',rd:'takusan kaimasu',zh:'我要買很多'},{jp:'まとめて',rd:'matomete',zh:'一起算'},{jp:'いろ',rd:'iro',zh:'顏色'},{jp:'サイズ',rd:'saizu',zh:'尺寸'},{jp:'ためしてみていいですか',rd:'tameshite mite ii desu ka',zh:'可以試試嗎？'},{jp:'にもつ',rd:'nimotsu',zh:'行李'},{jp:'おみやげ',rd:'omiyage',zh:'伴手禮'},{jp:'ふくろはいりますか',rd:'fukuro irimasu ka',zh:'需要袋子嗎？'},{jp:'カードでいいですか',rd:'kaado de ii desu ka',zh:'可以刷卡嗎？'},{jp:'レシートください',rd:'reshiito kudasai',zh:'請給收據'},{jp:'まとめていくらですか',rd:'matomete ikura desu ka',zh:'一共多少錢？'}]},
+  {week:2,day:7,theme:'藥局健康',words:[{jp:'くすり',rd:'kusuri',zh:'藥'},{jp:'やっきょく',rd:'yakkyoku',zh:'藥局'},{jp:'いたい',rd:'itai',zh:'痛'},{jp:'あたまがいたい',rd:'atama ga itai',zh:'頭痛'},{jp:'おなかがいたい',rd:'onaka ga itai',zh:'肚子痛'},{jp:'はながでる',rd:'hana ga deru',zh:'流鼻水'},{jp:'せき',rd:'seki',zh:'咳嗽'},{jp:'ねつ',rd:'netsu',zh:'發燒'},{jp:'かぜ',rd:'kaze',zh:'感冒'},{jp:'アレルギー',rd:'arerugii',zh:'過敏'},{jp:'ばんそうこう',rd:'bansoukou',zh:'OK繃'},{jp:'げり',rd:'geri',zh:'拉肚子'},{jp:'はきけ',rd:'hakike',zh:'想吐'},{jp:'いしゃ',rd:'isha',zh:'醫生'},{jp:'びょういん',rd:'byouin',zh:'醫院'}]},
+  {week:3,day:1,theme:'交通工具',words:[{jp:'でんしゃ',rd:'densha',zh:'電車'},{jp:'ちかてつ',rd:'chikatetsu',zh:'地鐵'},{jp:'バス',rd:'basu',zh:'公車'},{jp:'タクシー',rd:'takushii',zh:'計程車'},{jp:'しんかんせん',rd:'shinkansen',zh:'新幹線'},{jp:'ひこうき',rd:'hikouki',zh:'飛機'},{jp:'じてんしゃ',rd:'jitensha',zh:'腳踏車'},{jp:'のる',rd:'noru',zh:'搭乘'},{jp:'おりる',rd:'oriru',zh:'下車'},{jp:'のりかえ',rd:'norikae',zh:'換乘'},{jp:'ていりゅうじょ',rd:'teiryuujo',zh:'公車站'},{jp:'タクシーのりば',rd:'takushii noriba',zh:'計程車站'},{jp:'くうこう',rd:'kuukou',zh:'機場'},{jp:'あるく',rd:'aruku',zh:'走路'},{jp:'バスてい',rd:'basu tei',zh:'巴士站牌'}]},
+  {week:3,day:2,theme:'車站電車',words:[{jp:'えき',rd:'eki',zh:'車站'},{jp:'かいさつ',rd:'kaisatsu',zh:'剪票口'},{jp:'ホーム',rd:'hoomu',zh:'月台'},{jp:'でぐち',rd:'deguchi',zh:'出口'},{jp:'いりぐち',rd:'iriguchi',zh:'入口'},{jp:'きっぷ',rd:'kippu',zh:'票'},{jp:'じどうけんばいき',rd:'jidou kenbaiki',zh:'自動售票機'},{jp:'Suica',rd:'suika',zh:'西瓜卡'},{jp:'ちゃーじ',rd:'chaaji',zh:'儲值'},{jp:'なんばんせん',rd:'nanban sen',zh:'幾號線？'},{jp:'つぎのでんしゃ',rd:'tsugi no densha',zh:'下一班電車'},{jp:'おくれ',rd:'okure',zh:'誤點'},{jp:'しゅうでん',rd:'shuuden',zh:'末班電車'},{jp:'じこくひょう',rd:'jikokuhyou',zh:'時刻表'},{jp:'のりこし',rd:'norikoshi',zh:'坐過站'}]},
+  {week:3,day:3,theme:'問路',words:[{jp:'〜はどこですか',rd:'~wa doko desu ka',zh:'〜在哪裡？'},{jp:'まっすぐ',rd:'massugu',zh:'直走'},{jp:'みぎにまがる',rd:'migi ni magaru',zh:'右轉'},{jp:'ひだりにまがる',rd:'hidari ni magaru',zh:'左轉'},{jp:'わたる',rd:'wataru',zh:'穿越'},{jp:'しんごう',rd:'shingou',zh:'紅綠燈'},{jp:'かど',rd:'kado',zh:'角落'},{jp:'むかいがわ',rd:'mukaisawa',zh:'對面'},{jp:'ちかく',rd:'chikaku',zh:'附近'},{jp:'なんぷんかかりますか',rd:'nanpun kakarimasu ka',zh:'要幾分鐘？'},{jp:'ちず',rd:'chizu',zh:'地圖'},{jp:'グーグルマップ',rd:'guuguru mappu',zh:'Google Maps'},{jp:'みちがわからない',rd:'michi ga wakaranai',zh:'不知道路'},{jp:'めのまえ',rd:'me no mae',zh:'眼前'},{jp:'となり',rd:'tonari',zh:'隔壁'}]},
+  {week:3,day:4,theme:'住宿飯店',words:[{jp:'ホテル',rd:'hoteru',zh:'飯店'},{jp:'りょかん',rd:'ryokan',zh:'日式旅館'},{jp:'チェックイン',rd:'chekkuin',zh:'入住'},{jp:'チェックアウト',rd:'chekkuauto',zh:'退房'},{jp:'よやく',rd:'yoyaku',zh:'預約'},{jp:'へや',rd:'heya',zh:'房間'},{jp:'シングル',rd:'shinguru',zh:'單人房'},{jp:'ダブル',rd:'daburu',zh:'雙人房'},{jp:'きんえん',rd:'kinen',zh:'禁煙'},{jp:'ちょうしょく',rd:'choushoku',zh:'早餐'},{jp:'タオル',rd:'taoru',zh:'毛巾'},{jp:'かぎ',rd:'kagi',zh:'鑰匙'},{jp:'フロント',rd:'furonto',zh:'櫃台'},{jp:'ルームサービス',rd:'ruumu saabisu',zh:'客房服務'},{jp:'おねがいします',rd:'onegaishimasu',zh:'麻煩你了'}]},
+  {week:3,day:5,theme:'觀光景點',words:[{jp:'かんこう',rd:'kankou',zh:'觀光'},{jp:'じんじゃ',rd:'jinja',zh:'神社'},{jp:'おてら',rd:'otera',zh:'寺廟'},{jp:'しろ',rd:'shiro',zh:'城堡'},{jp:'こうえん',rd:'kouen',zh:'公園'},{jp:'はくぶつかん',rd:'hakubutsukan',zh:'博物館'},{jp:'びじゅつかん',rd:'bijutsukan',zh:'美術館'},{jp:'おんせん',rd:'onsen',zh:'溫泉'},{jp:'にわ',rd:'niwa',zh:'庭院'},{jp:'もみじ',rd:'momiji',zh:'紅葉'},{jp:'さくら',rd:'sakura',zh:'櫻花'},{jp:'やま',rd:'yama',zh:'山'},{jp:'うみ',rd:'umi',zh:'海'},{jp:'しぜん',rd:'shizen',zh:'自然'},{jp:'にゅうじょうけん',rd:'nyuujouken',zh:'入場券'}]},
+  {week:3,day:6,theme:'天氣',words:[{jp:'てんき',rd:'tenki',zh:'天氣'},{jp:'はれ',rd:'hare',zh:'晴天'},{jp:'くもり',rd:'kumori',zh:'陰天'},{jp:'あめ',rd:'ame',zh:'雨'},{jp:'ゆき',rd:'yuki',zh:'雪'},{jp:'かぜ',rd:'kaze',zh:'風'},{jp:'あつい',rd:'atsui',zh:'熱'},{jp:'さむい',rd:'samui',zh:'冷'},{jp:'すずしい',rd:'suzushii',zh:'涼爽'},{jp:'あたたかい',rd:'atatakai',zh:'溫暖'},{jp:'むしあつい',rd:'mushiatsui',zh:'悶熱'},{jp:'かさ',rd:'kasa',zh:'雨傘'},{jp:'にわかあめ',rd:'niwaka ame',zh:'陣雨'},{jp:'たいふう',rd:'taifuu',zh:'颱風'},{jp:'きおん',rd:'kion',zh:'氣溫'}]},
+  {week:3,day:7,theme:'緊急情況',words:[{jp:'たすけて',rd:'tasukete',zh:'救命！'},{jp:'きけん',rd:'kiken',zh:'危險'},{jp:'かじ',rd:'kaji',zh:'火災'},{jp:'どろぼう',rd:'dorobou',zh:'小偷'},{jp:'まよった',rd:'mayotta',zh:'迷路了'},{jp:'なくした',rd:'nakushita',zh:'弄丟了'},{jp:'ぬすまれた',rd:'nusumareta',zh:'被偷了'},{jp:'けいさつ',rd:'keisatsu',zh:'警察'},{jp:'きゅうきゅうしゃ',rd:'kyuukyuusha',zh:'救護車'},{jp:'しょうぼうしゃ',rd:'shoubosha',zh:'消防車'},{jp:'たいしかん',rd:'taishikan',zh:'大使館'},{jp:'パスポート',rd:'pasupooto',zh:'護照'},{jp:'ほけん',rd:'hoken',zh:'保險'},{jp:'にほんごがわかりません',rd:'nihongo ga wakarimasen',zh:'我不懂日文'},{jp:'ちゅうごくごはなせますか',rd:'chuugokugo hanasemasu ka',zh:'你說中文嗎？'}]},
+  {week:4,day:1,theme:'人物稱謂',words:[{jp:'わたし',rd:'watashi',zh:'我'},{jp:'あなた',rd:'anata',zh:'你'},{jp:'かれ',rd:'kare',zh:'他'},{jp:'かのじょ',rd:'kanojo',zh:'她'},{jp:'ともだち',rd:'tomodachi',zh:'朋友'},{jp:'かぞく',rd:'kazoku',zh:'家人'},{jp:'おとうさん',rd:'otousan',zh:'爸爸'},{jp:'おかあさん',rd:'okaasan',zh:'媽媽'},{jp:'あに',rd:'ani',zh:'哥哥'},{jp:'おとうと',rd:'otouto',zh:'弟弟'},{jp:'あね',rd:'ane',zh:'姊姊'},{jp:'いもうと',rd:'imouto',zh:'妹妹'},{jp:'こども',rd:'kodomo',zh:'小孩'},{jp:'おとな',rd:'otona',zh:'大人'},{jp:'おじさん',rd:'ojisan',zh:'叔叔'}]},
+  {week:4,day:2,theme:'形容詞上',words:[{jp:'おおきい',rd:'ookii',zh:'大的'},{jp:'ちいさい',rd:'chiisai',zh:'小的'},{jp:'たかい',rd:'takai',zh:'高的／貴的'},{jp:'ひくい',rd:'hikui',zh:'低的'},{jp:'ながい',rd:'nagai',zh:'長的'},{jp:'みじかい',rd:'mijikai',zh:'短的'},{jp:'おもい',rd:'omoi',zh:'重的'},{jp:'かるい',rd:'karui',zh:'輕的'},{jp:'あたらしい',rd:'atarashii',zh:'新的'},{jp:'ふるい',rd:'furui',zh:'舊的'},{jp:'きれい',rd:'kirei',zh:'漂亮／乾淨'},{jp:'きたない',rd:'kitanai',zh:'髒的'},{jp:'たのしい',rd:'tanoshii',zh:'開心的'},{jp:'かなしい',rd:'kanashii',zh:'悲傷的'},{jp:'いそがしい',rd:'isogashii',zh:'忙碌的'}]},
+  {week:4,day:3,theme:'形容詞下',words:[{jp:'おいしい',rd:'oishii',zh:'好吃'},{jp:'まずい',rd:'mazui',zh:'難吃'},{jp:'おもしろい',rd:'omoshiroi',zh:'有趣的'},{jp:'つまらない',rd:'tsumaranai',zh:'無聊的'},{jp:'むずかしい',rd:'muzukashii',zh:'難的'},{jp:'やさしい',rd:'yasashii',zh:'簡單／溫柔'},{jp:'はやい',rd:'hayai',zh:'快的'},{jp:'おそい',rd:'osoi',zh:'慢的'},{jp:'あかるい',rd:'akarui',zh:'明亮的'},{jp:'くらい',rd:'kurai',zh:'暗的'},{jp:'うるさい',rd:'urusai',zh:'吵的'},{jp:'しずか',rd:'shizuka',zh:'安靜的'},{jp:'べんり',rd:'benri',zh:'方便的'},{jp:'たいせつ',rd:'taisetsu',zh:'重要的'},{jp:'すき',rd:'suki',zh:'喜歡'}]},
+  {week:4,day:4,theme:'動詞上',words:[{jp:'いく',rd:'iku',zh:'去'},{jp:'くる',rd:'kuru',zh:'來'},{jp:'かえる',rd:'kaeru',zh:'回去'},{jp:'みる',rd:'miru',zh:'看'},{jp:'きく',rd:'kiku',zh:'聽／問'},{jp:'はなす',rd:'hanasu',zh:'說話'},{jp:'よむ',rd:'yomu',zh:'讀'},{jp:'かく',rd:'kaku',zh:'寫'},{jp:'たべる',rd:'taberu',zh:'吃'},{jp:'のむ',rd:'nomu',zh:'喝'},{jp:'かう',rd:'kau',zh:'買'},{jp:'うる',rd:'uru',zh:'賣'},{jp:'もつ',rd:'motsu',zh:'拿'},{jp:'おく',rd:'oku',zh:'放置'},{jp:'とる',rd:'toru',zh:'拿取'}]},
+  {week:4,day:5,theme:'動詞下',words:[{jp:'する',rd:'suru',zh:'做'},{jp:'ある',rd:'aru',zh:'有（物）'},{jp:'いる',rd:'iru',zh:'有（人）'},{jp:'わかる',rd:'wakaru',zh:'明白'},{jp:'しる',rd:'shiru',zh:'知道'},{jp:'おもう',rd:'omou',zh:'認為'},{jp:'みせる',rd:'miseru',zh:'給…看'},{jp:'おしえる',rd:'oshieru',zh:'告訴／教'},{jp:'てつだう',rd:'tetsudau',zh:'幫忙'},{jp:'まつ',rd:'matsu',zh:'等待'},{jp:'はいる',rd:'hairu',zh:'進入'},{jp:'でる',rd:'deru',zh:'出去'},{jp:'あく',rd:'aku',zh:'打開'},{jp:'しまる',rd:'shimaru',zh:'關閉'},{jp:'つかう',rd:'tsukau',zh:'使用'}]},
+  {week:4,day:6,theme:'旅行綜合上',words:[{jp:'りょこう',rd:'ryokou',zh:'旅行'},{jp:'かんこうあんない',rd:'kankou annai',zh:'觀光服務台'},{jp:'パンフレット',rd:'panfuretto',zh:'小冊子'},{jp:'じゆうじかん',rd:'jiyuu jikan',zh:'自由時間'},{jp:'しゃしん',rd:'shashin',zh:'照片'},{jp:'しゃしんをとる',rd:'shashin wo toru',zh:'拍照'},{jp:'いっしょに',rd:'issho ni',zh:'一起'},{jp:'ひとりで',rd:'hitori de',zh:'一個人'},{jp:'スマートフォン',rd:'sumaatofon',zh:'智慧型手機'},{jp:'じゅうでん',rd:'juuden',zh:'充電'},{jp:'WIFI',rd:'wai fai',zh:'無線網路'},{jp:'パスワード',rd:'pasuwaado',zh:'密碼'},{jp:'コンセント',rd:'konsento',zh:'插座'},{jp:'ゴミばこ',rd:'gomibako',zh:'垃圾桶'},{jp:'にゅうじょうけん',rd:'nyuujouken',zh:'入場券'}]},
+  {week:4,day:7,theme:'旅行綜合下',words:[{jp:'もうすぐ',rd:'mousugu',zh:'快到了'},{jp:'まだ',rd:'mada',zh:'還沒'},{jp:'もう',rd:'mou',zh:'已經'},{jp:'ぜんぶ',rd:'zenbu',zh:'全部'},{jp:'すこし',rd:'sukoshi',zh:'一點點'},{jp:'たくさん',rd:'takusan',zh:'很多'},{jp:'ちょっと',rd:'chotto',zh:'稍微'},{jp:'とても',rd:'totemo',zh:'非常'},{jp:'あまり',rd:'amari',zh:'不太（搭配否定）'},{jp:'ぜんぜん',rd:'zenzen',zh:'完全不'},{jp:'だいたい',rd:'daitai',zh:'大概'},{jp:'はじめて',rd:'hajimete',zh:'第一次'},{jp:'またきたい',rd:'mata kitai',zh:'還想再來'},{jp:'たのしかった',rd:'tanoshikatta',zh:'很開心（過去）'},{jp:'またね',rd:'matane',zh:'下次見'}]},
+];
+
+/* ── 常數 ── */
+var FOODS=[
+  {id:'onigiri', em:'🍙', name:'御飯糰',   jp:'おにぎり',  hunger:14},
+  {id:'ramen',   em:'🍜', name:'拉麵',     jp:'ラーメン',  hunger:22},
+  {id:'sushi',   em:'🍣', name:'壽司',     jp:'すし',      hunger:18},
+  {id:'dango',   em:'🍡', name:'糰子',     jp:'だんご',    hunger:10},
+  {id:'bento',   em:'🍱', name:'便當',     jp:'べんとう',  hunger:26},
+  {id:'taiyaki', em:'🐟', name:'鯛魚燒',   jp:'たいやき',  hunger:12},
+  {id:'matcha',  em:'🍵', name:'抹茶',     jp:'まっちゃ',  hunger:8}
+];
+var STOPS=[
+  {name:'成田機場', jp:'なりたくうこう', em:'🛫', req:0,   desc:'旅程的起點，小夥伴既緊張又興奮！'},
+  {name:'東京',     jp:'とうきょう',     em:'🗼', req:15,  desc:'晴空塔、澀谷、秋葉原，逛到腿軟。'},
+  {name:'鎌倉',     jp:'かまくら',       em:'🎐', req:35,  desc:'看大佛、吃小町通的點心，海風好舒服。'},
+  {name:'富士山',   jp:'ふじさん',       em:'🗻', req:60,  desc:'在河口湖畔眺望富士山，太感動了。'},
+  {name:'名古屋',   jp:'なごや',         em:'🏯', req:90,  desc:'名古屋城與味噌豬排，吃貨的天堂。'},
+  {name:'京都',     jp:'きょうと',       em:'⛩️', req:130, desc:'穿和服逛清水寺，小夥伴超上鏡。'},
+  {name:'大阪',     jp:'おおさか',       em:'🐙', req:175, desc:'道頓堀的章魚燒一口接一口。'},
+  {name:'沖繩',     jp:'おきなわ',       em:'🏖️', req:230, desc:'碧海藍天！環遊日本達成，畢業旅行！'}
+];
+var STAGES=[
+  {min:1, name:'蛋',       label:'EGG'},
+  {min:2, name:'幼犬',     label:'BABY'},
+  {min:5, name:'小柴',     label:'KID'},
+  {min:9, name:'旅行柴',   label:'TRAVELER'}
+];
+var PAT_CD=8*60*1000;          /* 摸摸冷卻 8 分鐘 */
+var HUNGER_DECAY=3, MOOD_DECAY=2.5;  /* 每小時 */
+var MAX_OFFLINE_H=20;          /* 離線衰減上限（小時） */
+var QUIZ_LEN=5;
+
+/* ── 狀態 ── */
+var DEF={
+  name:'', born:0, xp:0, hunger:80, mood:80, lastTick:Date.now(),
+  inv:{}, correct:0, wrong:0, fed:0, pats:0, lastPat:0,
+  streak:0, lastDay:'', days:{}, learned:{}, wrongs:{}, stopsSeen:1
+};
+var S=JSON.parse(JSON.stringify(DEF));
+function save(){try{localStorage.setItem('jpTama1',JSON.stringify(S));}catch(e){}}
+function load(){
+  try{
+    var d=localStorage.getItem('jpTama1');
+    if(d){var p=JSON.parse(d);Object.keys(p).forEach(function(k){S[k]=p[k];});}
+  }catch(e){}
+}
+
+/* ── 等級 ── */
+function levelInfo(){
+  var lv=1,rem=S.xp,need=40;
+  while(rem>=need){rem-=need;lv++;need=40+(lv-1)*22;}
+  return {lv:lv,into:rem,need:need};
+}
+function stageOf(lv){
+  var st=0;
+  for(var i=0;i<STAGES.length;i++){if(lv>=STAGES[i].min)st=i;}
+  return st;
+}
+function stopIndex(){
+  var idx=0;
+  for(var i=0;i<STOPS.length;i++){if(S.correct>=STOPS[i].req)idx=i;}
+  return idx;
+}
+
+/* ── 寵物繪製（SVG）── */
+function petSVG(){
+  var lv=levelInfo().lv, st=stageOf(lv);
+  var hungry=S.hunger<28, sad=S.mood<28;
+  if(st===0){ /* 蛋 */
+    var crack=lv>=1&&levelInfo().into>20;
+    return '<svg viewBox="0 0 200 200">'+
+      '<ellipse cx="100" cy="178" rx="52" ry="9" fill="rgba(0,0,0,.08)"/>'+
+      '<path d="M100 30 C 145 30 158 90 158 122 C 158 158 132 178 100 178 C 68 178 42 158 42 122 C 42 90 55 30 100 30 Z" fill="#fffdf5" stroke="#e8d9bd" stroke-width="3"/>'+
+      '<circle cx="82" cy="90" r="5" fill="#f0e0c0"/><circle cx="120" cy="118" r="6" fill="#f0e0c0"/><circle cx="95" cy="140" r="4" fill="#f0e0c0"/>'+
+      (crack?'<path d="M88 60 l10 12 l-8 10 l12 12" fill="none" stroke="#d8c49c" stroke-width="3" stroke-linecap="round"/>':'')+
+      '<circle cx="88" cy="105" r="3.5" fill="#4a3626"/><circle cx="112" cy="105" r="3.5" fill="#4a3626"/>'+
+      '</svg>';
+  }
+  /* 柴犬本體 */
+  var scale=st===1?0.82:st===2?0.94:1;
+  var body='#eba05e', cream='#fff7ea', dark='#4a3626';
+  var eyes, mouth, cheeks='', extra='', tear='';
+  if(sad||hungry){
+    eyes='<circle cx="76" cy="106" r="4.5" fill="'+dark+'"/><circle cx="124" cy="106" r="4.5" fill="'+dark+'"/>'+
+         '<path d="M66 95 l16 6 M134 95 l-16 6" stroke="'+dark+'" stroke-width="3" stroke-linecap="round"/>';
+    mouth='<path d="M90 142 Q100 134 110 142" fill="none" stroke="'+dark+'" stroke-width="3.5" stroke-linecap="round"/>';
+    if(hungry) tear='<ellipse cx="132" cy="120" rx="4" ry="6" fill="#9ed4f0" opacity=".9"/>';
+  }else if(S.mood>72){
+    eyes='<path d="M68 104 q8 -9 16 0" fill="none" stroke="'+dark+'" stroke-width="4" stroke-linecap="round"/>'+
+         '<path d="M116 104 q8 -9 16 0" fill="none" stroke="'+dark+'" stroke-width="4" stroke-linecap="round"/>';
+    mouth='<path d="M88 136 Q94 145 100 138 Q106 145 112 136" fill="none" stroke="'+dark+'" stroke-width="3.5" stroke-linecap="round"/>';
+    cheeks='<ellipse cx="63" cy="122" rx="9" ry="6" fill="#f7bcae" opacity=".8"/><ellipse cx="137" cy="122" rx="9" ry="6" fill="#f7bcae" opacity=".8"/>';
+  }else{
+    eyes='<circle cx="76" cy="104" r="5" fill="'+dark+'"/><circle cx="124" cy="104" r="5" fill="'+dark+'"/>'+
+         '<circle cx="78" cy="102" r="1.8" fill="#fff"/><circle cx="126" cy="102" r="1.8" fill="#fff"/>';
+    mouth='<path d="M92 138 Q100 143 108 138" fill="none" stroke="'+dark+'" stroke-width="3.5" stroke-linecap="round"/>';
+  }
+  if(st===1){ /* 幼犬：蛋殼帽 */
+    extra='<path d="M70 52 L80 36 L90 50 L100 34 L110 50 L120 36 L130 52 Q100 40 70 52 Z" fill="#fffdf5" stroke="#e8d9bd" stroke-width="2.5" transform="translate(0,-8)"/>';
+  }else if(st===2){ /* 小柴：紅領巾 */
+    extra='<path d="M62 152 Q100 170 138 152 L134 166 Q100 182 66 166 Z" fill="#e05a4e"/>'+
+          '<path d="M96 162 l8 0 l-2 16 l-4 0 Z" fill="#c94a3e"/>';
+  }else if(st===3){ /* 旅行柴：草帽＋領巾 */
+    extra='<path d="M62 152 Q100 170 138 152 L134 166 Q100 182 66 166 Z" fill="#e05a4e"/>'+
+          '<path d="M96 162 l8 0 l-2 16 l-4 0 Z" fill="#c94a3e"/>'+
+          '<ellipse cx="100" cy="52" rx="52" ry="12" fill="#f2d38c" stroke="#d8b264" stroke-width="2"/>'+
+          '<path d="M72 50 Q72 24 100 24 Q128 24 128 50 Q100 60 72 50 Z" fill="#f2d38c" stroke="#d8b264" stroke-width="2"/>'+
+          '<path d="M72 46 Q100 55 128 46" fill="none" stroke="#e05a4e" stroke-width="5"/>';
+  }
+  return '<svg viewBox="0 0 200 200" style="transform:scale('+scale+');transform-origin:bottom center">'+
+    '<ellipse cx="100" cy="180" rx="56" ry="9" fill="rgba(0,0,0,.08)"/>'+
+    /* 耳朵 */
+    '<path d="M52 76 L62 34 L92 62 Z" fill="'+body+'" stroke="'+body+'" stroke-width="4" stroke-linejoin="round"/>'+
+    '<path d="M148 76 L138 34 L108 62 Z" fill="'+body+'" stroke="'+body+'" stroke-width="4" stroke-linejoin="round"/>'+
+    '<path d="M62 66 L66 46 L82 60 Z" fill="#f7d3b0"/>'+
+    '<path d="M138 66 L134 46 L118 60 Z" fill="#f7d3b0"/>'+
+    /* 頭 */
+    '<ellipse cx="100" cy="112" rx="62" ry="56" fill="'+body+'"/>'+
+    /* 白臉頰 */
+    '<path d="M100 88 C 128 88 142 110 140 132 C 138 154 122 166 100 166 C 78 166 62 154 60 132 C 58 110 72 88 100 88 Z" fill="'+cream+'"/>'+
+    '<path d="M58 96 Q72 78 92 80 L88 96 Z" fill="'+cream+'" opacity=".9"/>'+
+    '<path d="M142 96 Q128 78 108 80 L112 96 Z" fill="'+cream+'" opacity=".9"/>'+
+    eyes+cheeks+tear+
+    '<ellipse cx="100" cy="126" rx="7" ry="5.5" fill="'+dark+'"/>'+
+    mouth+extra+
+    '</svg>';
+}
+
+/* ── 渲染 ── */
+function fmtBar(id,vid,v){
+  var el=document.getElementById(id);
+  el.style.width=v+'%';
+  document.getElementById(vid).textContent=Math.round(v);
+  if(id==='bar-hunger') el.style.background=v<28?'var(--danger)':v<55?'#f5c445':'var(--green)';
+  if(id==='bar-mood')   el.style.background=v<28?'var(--danger)':'var(--pink)';
+}
+function render(){
+  var li=levelInfo(), st=stageOf(li.lv), stopIdx=stopIndex(), stop=STOPS[stopIdx];
+  document.getElementById('h-name').textContent=S.name||'？？？';
+  document.getElementById('h-lv').textContent='Lv.'+li.lv+'・'+STAGES[st].name;
+  document.getElementById('h-streak').textContent=S.streak;
+  document.getElementById('h-correct').textContent=S.correct;
+  fmtBar('bar-hunger','val-hunger',S.hunger);
+  fmtBar('bar-mood','val-mood',S.mood);
+  document.getElementById('bar-xp').style.width=Math.round(li.into/li.need*100)+'%';
+  document.getElementById('xp-label').textContent='EXP '+li.into+' / '+li.need;
+  /* 場景 */
+  document.getElementById('scene-loc').textContent='📍 '+stop.name+'（'+stop.jp+'）';
+  document.getElementById('scene-deco').textContent=stop.em;
+  var h=new Date().getHours();
+  document.getElementById('scene').classList.toggle('night',h>=19||h<5);
+  /* 寵物 */
+  var pet=document.getElementById('pet');
+  pet.innerHTML=petSVG();
+  pet.classList.toggle('sadmove',(S.hunger<28||S.mood<28)&&st>0);
+  /* 背包 */
+  var row=document.getElementById('inv-row'),html='',total=0;
+  FOODS.forEach(function(f){
+    var n=S.inv[f.id]||0;total+=n;
+    if(n>0)html+='<div class="food" title="'+f.name+'（'+f.jp+'）滿腹+'+f.hunger+'" onclick="feed(\''+f.id+'\')">'+f.em+'<span class="cnt">'+n+'</span></div>';
+  });
+  row.innerHTML=total>0?html:'<div class="inv-empty">背包空空的…去「測驗覓食」幫牠找點吃的吧！</div>';
+  renderJourney();
+  renderStats();
+}
+function renderJourney(){
+  var idx=stopIndex(),html='';
+  STOPS.forEach(function(s,i){
+    var cls=i<idx?'done':i===idx?'now':'lock';
+    html+='<div class="j-stop '+cls+'">'+
+      (i<STOPS.length-1?'<div class="j-line"></div>':'')+
+      '<div class="j-dot">'+s.em+'</div>'+
+      '<div class="j-info"><div class="j-name">'+s.name+'<span class="jp">'+s.jp+'</span>'+(i===idx?'<span class="j-now-tag">目前位置</span>':'')+'</div>'+
+      '<div class="j-desc">'+s.desc+'</div>'+
+      (i>idx?'<div class="j-req">還差 <b>'+(s.req-S.correct)+'</b> 題答對就出發</div>':'')+
+      '</div></div>';
+  });
+  document.getElementById('j-list').innerHTML=html;
+}
+function renderStats(){
+  var days=Object.keys(S.days).length;
+  var tot=S.correct+S.wrong;
+  document.getElementById('s-days').textContent=S.born?Math.max(1,Math.ceil((Date.now()-S.born)/86400000)):0;
+  document.getElementById('s-streak').textContent=S.streak;
+  document.getElementById('s-correct').textContent=S.correct;
+  document.getElementById('s-acc').textContent=tot?Math.round(S.correct/tot*100)+'%':'--%';
+  document.getElementById('s-fed').textContent=S.fed;
+  document.getElementById('s-words').textContent=Object.keys(S.learned).length;
+  document.getElementById('s-sub').textContent=S.name?('和 '+S.name+' 一起努力的足跡（實際學習 '+days+' 天）'):'和小夥伴一起努力的足跡';
+  var ws=Object.keys(S.wrongs).map(function(k){return {k:k,n:S.wrongs[k]};})
+    .sort(function(a,b){return b.n-a.n;}).slice(0,8);
+  var box=document.getElementById('s-wrongs');
+  if(!ws.length){box.innerHTML='<div class="s-empty">目前沒有紀錄，太棒了！</div>';return;}
+  box.innerHTML=ws.map(function(w){
+    var p=w.k.split('|||');
+    return '<div class="s-wordrow"><span class="jp">'+p[0]+'</span><span class="zh">'+p[1]+'（錯 '+w.n+' 次）</span></div>';
+  }).join('');
+}
+
+/* ── 泡泡 / 特效 / Toast ── */
+var bubbleTimer=null;
+function say(jp,rd,ms){
+  var b=document.getElementById('bubble');
+  b.innerHTML=jp+(rd?'<span class="rd">'+rd+'</span>':'');
+  b.classList.add('on');
+  clearTimeout(bubbleTimer);
+  bubbleTimer=setTimeout(function(){b.classList.remove('on');},ms||2400);
+}
+function fx(em){
+  var area=document.querySelector('.pet-area');
+  var e=document.createElement('div');
+  e.className='fx';e.textContent=em;
+  e.style.left=(38+Math.random()*24)+'%';
+  e.style.top=(30+Math.random()*20)+'%';
+  area.appendChild(e);
+  setTimeout(function(){e.remove();},1000);
+}
+var toastTimer=null;
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.classList.remove('on');},2200);
+}
+function anim(cls,ms){
+  var pet=document.getElementById('pet');
+  pet.classList.remove('eat','joy');
+  void pet.offsetWidth;
+  pet.classList.add(cls);
+  setTimeout(function(){pet.classList.remove(cls);},ms);
+}
+
+/* ── 互動 ── */
+function patPet(){
+  go('home');
+  var li=levelInfo();
+  if(stageOf(li.lv)===0){
+    say('……コンコン！','（蛋裡傳來敲敲聲）');
+    fx('❔');
+    return;
+  }
+  var now=Date.now();
+  if(now-S.lastPat<PAT_CD){
+    /* 冷卻中：說一句學過的日文 */
+    var keys=Object.keys(S.learned);
+    if(keys.length){
+      var k=keys[Math.floor(Math.random()*keys.length)];
+      var w=S.learned[k];
+      say(w.jp,w.rd);
+    }else{
+      say('ぺこぺこ…','pekopeko（肚子餓餓）');
+    }
+    fx('🎵');
+    return;
+  }
+  S.lastPat=now;S.pats++;
+  S.mood=Math.min(100,S.mood+7);
+  S.xp+=2;
+  fx('💕');anim('joy',1100);
+  say('うれしい！','ureshii（好開心）');
+  checkLevel();save();render();
+}
+function feed(id){
+  var f=null;
+  for(var i=0;i<FOODS.length;i++)if(FOODS[i].id===id)f=FOODS[i];
+  if(!f||!(S.inv[id]>0))return;
+  if(S.hunger>=99){say('おなかいっぱい！','onaka ippai（好飽）');fx('😋');return;}
+  S.inv[id]--;if(S.inv[id]<=0)delete S.inv[id];
+  S.hunger=Math.min(100,S.hunger+f.hunger);
+  S.mood=Math.min(100,S.mood+4);
+  S.xp+=6;S.fed++;
+  fx(f.em);anim('eat',1500);
+  say('いただきます！','itadakimasu（開動了）');
+  toast(f.name+'（'+f.jp+'）滿腹 +'+f.hunger);
+  checkLevel();save();render();
+}
+function checkLevel(){
+  var li=levelInfo();
+  if(!S._lv)S._lv=1;
+  if(li.lv>S._lv){
+    var oldStage=stageOf(S._lv),newStage=stageOf(li.lv);
+    S._lv=li.lv;
+    if(newStage>oldStage){
+      var msgs={
+        1:['🐣','孵化了！','蛋殼裂開，一隻迷你柴犬探出頭來！\n牠決定叫你「師匠」。'],
+        2:['🐕','長大了！','小夥伴繫上了紅領巾，\n看起來已經是能獨當一面的小柴了！'],
+        3:['🎒','旅行柴誕生！','戴上草帽、背起行囊——\n牠現在是見多識廣的旅行柴前輩了！']
+      };
+      var m=msgs[newStage];
+      if(m)showEv(m[0],m[1],m[2]);
+    }else{
+      toast('升級！Lv.'+li.lv+' 🎉');
+      fx('⬆️');
+    }
+  }
+  /* 新景點 */
+  var idx=stopIndex();
+  if(idx+1>S.stopsSeen){
+    S.stopsSeen=idx+1;
+    var s=STOPS[idx];
+    showEv(s.em,'抵達 '+s.name+'！',s.name+'（'+s.jp+'）\n'+s.desc);
+  }
+}
+
+/* ── 每日 / 衰減 ── */
+function todayKey(){return new Date().toLocaleDateString('sv');}
+function markStudy(){
+  var t=todayKey();
+  if(!S.days[t]){
+    S.days[t]=true;
+    var y=new Date(Date.now()-86400000).toLocaleDateString('sv');
+    S.streak=(S.lastDay===y)?S.streak+1:1;
+    S.lastDay=t;
+    if(S.streak>1)toast('連續學習 '+S.streak+' 天！🔥');
+  }
+}
+function tick(){
+  var now=Date.now();
+  var hrs=Math.min(MAX_OFFLINE_H,(now-S.lastTick)/3600000);
+  if(hrs>0.01){
+    S.hunger=Math.max(0,S.hunger-HUNGER_DECAY*hrs);
+    S.mood=Math.max(0,S.mood-MOOD_DECAY*hrs);
+    S.lastTick=now;
+    save();
+  }
+}
+
+/* ── 測驗 ── */
+var Q={list:[],i:0,got:[],answered:false};
+function pickQuestions(){
+  var pool=[];
+  VDB.forEach(function(d){d.words.forEach(function(w){pool.push({w:w,theme:d.theme});});});
+  /* 一半機率優先出錯過的題 */
+  var wrongKeys=Object.keys(S.wrongs);
+  var list=[],used={};
+  while(list.length<QUIZ_LEN){
+    var item=null;
+    if(wrongKeys.length&&Math.random()<0.3){
+      var wk=wrongKeys[Math.floor(Math.random()*wrongKeys.length)];
+      var jp=wk.split('|||')[0];
+      for(var i=0;i<pool.length;i++)if(pool[i].w.jp===jp){item=pool[i];break;}
+    }
+    if(!item)item=pool[Math.floor(Math.random()*pool.length)];
+    if(used[item.w.jp])continue;
+    used[item.w.jp]=true;
+    var dir=Math.random()<0.5?'j2z':'z2j';
+    /* 選項 */
+    var opts=[dir==='j2z'?item.w.zh:item.w.jp],seen={};
+    seen[opts[0]]=true;
+    var guard=0;
+    while(opts.length<4&&guard<300){
+      guard++;
+      var o=pool[Math.floor(Math.random()*pool.length)].w;
+      var v=dir==='j2z'?o.zh:o.jp;
+      if(seen[v])continue;
+      seen[v]=true;opts.push(v);
+    }
+    for(var j=opts.length-1;j>0;j--){var r=Math.floor(Math.random()*(j+1));var tmp=opts[j];opts[j]=opts[r];opts[r]=tmp;}
+    list.push({w:item.w,theme:item.theme,dir:dir,opts:opts});
+  }
+  return list;
+}
+function startQuiz(){
+  Q.list=pickQuestions();Q.i=0;Q.got=[];
+  go('quiz');
+  renderQ();
+}
+function renderQ(){
+  var wrap=document.getElementById('q-wrap');
+  if(Q.i>=Q.list.length){renderReward();return;}
+  var q=Q.list[Q.i];
+  Q.answered=false;
+  var prompt=q.dir==='j2z'?q.w.jp:q.w.zh;
+  var rd=q.dir==='j2z'?q.w.rd:'';
+  var ask=q.dir==='j2z'?'這是什麼意思？':'日文怎麼說？';
+  wrap.innerHTML=
+    '<div class="q-head"><div class="q-prog">第 '+(Q.i+1)+' / '+Q.list.length+' 題</div>'+
+    '<div class="q-quit" onclick="go(\'home\')">先不玩了</div></div>'+
+    '<div class="q-card"><div class="q-theme">'+q.theme+'・'+ask+'</div>'+
+    '<div class="q-word">'+prompt+'</div><div class="q-rd">'+rd+'</div></div>'+
+    '<div class="q-opts">'+q.opts.map(function(o,i){
+      return '<button class="q-opt" onclick="answer('+i+')">'+o+'</button>';
+    }).join('')+'</div>'+
+    '<div class="q-fb" id="q-fb"></div>';
+}
+function answer(i){
+  if(Q.answered)return;
+  Q.answered=true;
+  var q=Q.list[Q.i];
+  var right=q.dir==='j2z'?q.w.zh:q.w.jp;
+  var ok=q.opts[i]===right;
+  var btns=document.querySelectorAll('.q-opt');
+  btns.forEach(function(b,bi){
+    if(q.opts[bi]===right)b.classList.add('good');
+    else if(bi===i)b.classList.add('bad');
+    else b.classList.add('dim');
+  });
+  var fb=document.getElementById('q-fb');
+  var key=q.w.jp+'|||'+q.w.zh;
+  markStudy();
+  if(ok){
+    S.correct++;S.xp+=8;
+    S.learned[key]={jp:q.w.jp,rd:q.w.rd,zh:q.w.zh};
+    var f=FOODS[Math.floor(Math.random()*FOODS.length)];
+    S.inv[f.id]=(S.inv[f.id]||0)+1;
+    Q.got.push(f);
+    fb.innerHTML='<span style="color:var(--green)">⭕ 正解！獲得 '+f.em+' '+f.name+'</span>';
+  }else{
+    S.wrong++;S.xp+=2;
+    S.wrongs[key]=(S.wrongs[key]||0)+1;
+    fb.innerHTML='<span style="color:var(--danger)">❌ 正解是「'+right+'」（'+q.w.rd+'）</span>';
+  }
+  checkLevel();save();
+  setTimeout(function(){Q.i++;renderQ();},ok?900:1700);
+}
+function renderReward(){
+  var wrap=document.getElementById('q-wrap');
+  var n=Q.got.length;
+  var foods=Q.got.map(function(f){return f.em;}).join('');
+  var msg,em;
+  if(n===Q.list.length){em='🏆';msg='全對！小夥伴看你的眼神充滿崇拜！';}
+  else if(n>=3){em='🎉';msg='收穫滿滿！快回去餵牠吧！';}
+  else if(n>=1){em='🍀';msg='有找到吃的就是好日子！';}
+  else{em='💦';msg='這次空手而回…小夥伴摸摸你的頭說沒關係。';}
+  wrap.innerHTML=
+    '<div class="q-head"><div class="q-prog">覓食結果</div><div></div></div>'+
+    '<div class="q-reward"><div class="big">'+em+'</div>'+
+    '<h3>答對 '+n+' / '+Q.list.length+' 題</h3>'+
+    (n?'<div class="foods">'+foods+'</div><p>食物已放進背包，點擊背包裡的食物就能餵食。</p>':'<p>再挑戰一次，牠肚子咕嚕咕嚕叫了…</p>')+
+    '<div><button class="btn" onclick="startQuiz()">再來一輪 📝</button> '+
+    '<button class="btn ghost" onclick="go(\'home\')">回去餵食 🍙</button></div></div>';
+  render();
+}
+
+/* ── 事件彈窗 ── */
+function showEv(em,title,text){
+  document.getElementById('ev-big').textContent=em;
+  document.getElementById('ev-title').textContent=title;
+  document.getElementById('ev-text').innerHTML=text.replace(/\n/g,'<br>');
+  document.getElementById('ev-modal').classList.add('on');
+}
+function closeEv(e){
+  if(e&&e.target!==document.getElementById('ev-modal'))return;
+  document.getElementById('ev-modal').classList.remove('on');
+}
+
+/* ── 導覽 ── */
+function go(pg){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+  document.getElementById('pg-'+pg).classList.add('on');
+  document.querySelectorAll('.nav-item').forEach(function(n){
+    n.classList.toggle('on',n.getAttribute('data-pg')===pg);
+  });
+  if(pg==='quiz'&&(!Q.list.length||Q.i>=Q.list.length))startQuiz();
+  if(pg==='home')render();
+}
+
+/* ── 命名 / 重置 ── */
+function confirmName(){
+  var v=document.getElementById('name-input').value.trim()||'ぽち';
+  S.name=v;S.born=Date.now();S._lv=1;
+  document.getElementById('name-modal').classList.remove('on');
+  save();render();
+  setTimeout(function(){say('……！','（蛋輕輕晃了一下）');},600);
+}
+function resetAll(){
+  if(!confirm('確定要道別並重新開始嗎？所有紀錄都會消失。'))return;
+  if(!confirm('小夥伴會忘記你…真的確定嗎？'))return;
+  localStorage.removeItem('jpTama1');
+  location.reload();
+}
+
+/* ── 提醒訊息（狀態差時）── */
+function idleChatter(){
+  if(!S.name)return;
+  var st=stageOf(levelInfo().lv);
+  if(st===0)return;
+  if(S.hunger<28){say('おなかすいた〜','onaka suita（肚子餓了）');fx('🍙');}
+  else if(S.mood<28){say('さびしい…','sabishii（好寂寞）');}
+}
+
+/* ── 啟動 ── */
+load();
+tick();
+if(!S.name){
+  document.getElementById('name-modal').classList.add('on');
+}
+if(!S._lv)S._lv=levelInfo().lv;
+render();
+setInterval(function(){tick();render();},60000);
+setInterval(idleChatter,45000);
+setTimeout(idleChatter,4000);
+</script>
+</body>
+</html>
