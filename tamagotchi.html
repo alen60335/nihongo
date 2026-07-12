@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>旅日小夥伴 · 日文電子雞</title>
+<title>旅日小夥伴 · 日文養成戰鬥</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -19,6 +19,7 @@
   --green:#7cb356;
   --pink:#f2a0b5;
   --blue:#7fb5d5;
+  --purple:#9d8ac7;
   --danger:#d95f5f;
   --radius:16px;
 }
@@ -41,8 +42,8 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC','Noto San
 .scene-deco{position:absolute;top:36px;right:14px;font-size:44px;opacity:.9;z-index:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.1))}
 .scene-cloud{position:absolute;font-size:26px;opacity:.8;animation:drift 26s linear infinite;z-index:1}
 @keyframes drift{from{transform:translateX(-60px)}to{transform:translateX(480px)}}
-.pet-area{height:270px;display:flex;align-items:flex-end;justify-content:center;position:relative}
-.pet-wrap{width:190px;height:190px;margin-bottom:14px;cursor:pointer;position:relative;z-index:2;animation:idle 2.6s ease-in-out infinite;user-select:none}
+.pet-area{height:250px;display:flex;align-items:flex-end;justify-content:center;position:relative}
+.pet-wrap{width:180px;height:180px;margin-bottom:14px;cursor:pointer;position:relative;z-index:2;animation:idle 2.6s ease-in-out infinite;user-select:none}
 .pet-wrap.eat{animation:chomp .35s ease-in-out 4}
 .pet-wrap.joy{animation:jump .5s ease-in-out 2}
 .pet-wrap.sadmove{animation:wilt 2.8s ease-in-out infinite}
@@ -75,7 +76,6 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC','Noto San
 /* ── INVENTORY ── */
 .inv{margin:10px 14px 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px}
 .inv-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.1em;margin-bottom:8px}
-.inv-title b{color:var(--accent);font-weight:900}
 .inv-row{display:flex;gap:7px;flex-wrap:wrap;min-height:44px;align-items:center}
 .inv-empty{font-size:12px;color:var(--text3)}
 .food{width:46px;height:46px;border-radius:12px;background:#fdf6ec;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;position:relative;transition:transform .12s,border-color .12s}
@@ -90,7 +90,8 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC','Noto San
 .act .sub{font-size:10px;font-weight:400;opacity:.85}
 .act.quiz{background:var(--accent)}
 .act.pat{background:var(--pink)}
-.act.quiz:hover,.act.pat:hover{filter:brightness(1.06)}
+.act.fight{background:var(--purple)}
+.act:hover{filter:brightness(1.06)}
 
 /* ── PAGES / NAV ── */
 .page{display:none;flex:1}
@@ -101,36 +102,118 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC','Noto San
 .nav-item.on{color:var(--accent)}
 .nav-ic{font-size:19px}
 
-/* ── QUIZ ── */
+/* ── QUIZ（共用測驗 UI）── */
 .q-wrap{padding:16px}
 .q-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .q-prog{font-size:12px;font-weight:700;color:var(--text2)}
 .q-quit{font-size:12px;color:var(--text3);cursor:pointer;text-decoration:underline}
-.q-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:30px 20px;text-align:center;margin-bottom:14px}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:26px 20px;text-align:center;margin-bottom:14px}
 .q-theme{font-size:11px;color:var(--text3);font-weight:700;letter-spacing:.1em;margin-bottom:10px}
-.q-word{font-size:30px;font-weight:900;font-family:'Noto Sans JP','Noto Sans TC',sans-serif;line-height:1.4}
+.q-word{font-size:26px;font-weight:900;font-family:'Noto Sans JP','Noto Sans TC',sans-serif;line-height:1.5}
 .q-rd{font-size:13px;color:var(--text2);margin-top:6px;min-height:18px}
 .q-opts{display:flex;flex-direction:column;gap:9px}
-.q-opt{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;font-size:15px;font-weight:700;cursor:pointer;transition:all .12s;text-align:center;font-family:inherit;color:var(--text)}
+.q-opt{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:13px 16px;font-size:14px;font-weight:700;cursor:pointer;transition:all .12s;text-align:center;font-family:inherit;color:var(--text);line-height:1.5}
 .q-opt:hover{border-color:var(--accent)}
 .q-opt:active{transform:scale(.98)}
 .q-opt.good{background:#eef7e6;border-color:var(--green);color:#3f6b25}
 .q-opt.bad{background:#fdeeee;border-color:var(--danger);color:var(--danger)}
 .q-opt.dim{opacity:.45;pointer-events:none}
-.q-fb{text-align:center;margin-top:13px;font-size:14px;font-weight:700;min-height:22px}
+.q-fb{text-align:center;margin-top:13px;font-size:13px;font-weight:700;min-height:22px;line-height:1.6}
 .q-reward{background:#fff8ec;border:1.5px dashed var(--border2);border-radius:20px;padding:26px 18px;text-align:center}
 .q-reward .big{font-size:42px;margin-bottom:8px}
 .q-reward h3{font-size:18px;font-weight:900;margin-bottom:6px}
 .q-reward p{font-size:13px;color:var(--text2);line-height:1.7}
 .q-reward .foods{font-size:28px;letter-spacing:6px;margin:12px 0 4px}
-.btn{display:inline-block;border:none;background:var(--accent);color:#fff;font-family:inherit;font-size:14px;font-weight:900;border-radius:99px;padding:12px 30px;cursor:pointer;margin-top:14px;transition:transform .1s}
+.btn{display:inline-block;border:none;background:var(--accent);color:#fff;font-family:inherit;font-size:14px;font-weight:900;border-radius:99px;padding:12px 26px;cursor:pointer;margin-top:14px;transition:transform .1s}
 .btn:active{transform:scale(.96)}
 .btn.ghost{background:transparent;color:var(--text2);border:1.5px solid var(--border2)}
+.btn.sm{font-size:12px;padding:8px 18px;margin-top:8px}
+
+/* ── 修行 ── */
+.t-wrap{padding:16px}
+.pg-title{font-size:18px;font-weight:900;margin-bottom:3px}
+.pg-sub{font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.7}
+.sk-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:13px 14px;margin-bottom:9px;display:flex;gap:12px;align-items:center}
+.sk-card.locked{opacity:.7;background:#faf4e8}
+.sk-em{width:48px;height:48px;border-radius:14px;background:#fdf6ec;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.sk-body{flex:1;min-width:0}
+.sk-name{font-size:14px;font-weight:900}
+.sk-name .tag{font-size:9px;color:#fff;border-radius:99px;padding:2px 7px;margin-left:6px;font-weight:900;vertical-align:1px}
+.tag.atk{background:var(--danger)}.tag.heal{background:var(--green)}.tag.shield{background:var(--blue)}.tag.multi{background:var(--purple)}.tag.drain{background:#d99a3d}.tag.atk2{background:#c96a9c}
+.sk-desc{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.5}
+.sk-lv{font-size:11px;color:var(--accent);font-weight:900;margin-top:3px}
+.sk-lv .exp{color:var(--text3);font-weight:400}
+.sk-btn{border:none;background:var(--accent);color:#fff;font-family:inherit;font-size:12px;font-weight:900;border-radius:99px;padding:9px 14px;cursor:pointer;flex-shrink:0}
+.sk-btn.learn{background:var(--purple)}
+.sk-btn:active{transform:scale(.95)}
+.t-sec-title{font-size:12px;font-weight:900;color:var(--text2);letter-spacing:.08em;margin:16px 0 8px}
+
+/* ── 課程 ── */
+.lesson{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px}
+.lesson .l-tag{font-size:10px;color:#fff;background:var(--purple);border-radius:99px;padding:2px 9px;font-weight:900}
+.lesson h3{font-size:19px;font-weight:900;margin:8px 0 2px;font-family:'Noto Sans JP','Noto Sans TC',sans-serif}
+.lesson .l-sub{font-size:12px;color:var(--text2);margin-bottom:12px}
+.lesson .l-pattern{background:#f6f0ff;border:1px solid #e2d6f5;border-radius:12px;padding:11px 13px;font-size:14px;font-weight:700;margin-bottom:10px;font-family:'Noto Sans JP',sans-serif}
+.lesson .l-pattern .rd{display:block;font-size:11px;color:var(--text3);font-weight:400;margin-top:2px}
+.lesson .l-note{font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:12px}
+.lesson .l-ex{border-top:1px dashed var(--border);padding:9px 0;font-size:13px}
+.lesson .l-ex .jp{font-weight:700;font-family:'Noto Sans JP',sans-serif}
+.lesson .l-ex .zh{font-size:11px;color:var(--text2);margin-top:2px}
+
+/* ── 句子重組 ── */
+.bk-target{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;text-align:center;margin-bottom:12px}
+.bk-zh{font-size:17px;font-weight:900}
+.bk-jp{font-size:13px;color:var(--text2);margin-top:5px;font-family:'Noto Sans JP',sans-serif}
+.bk-slot{min-height:52px;background:#fdf6ec;border:1.5px dashed var(--border2);border-radius:14px;padding:9px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center}
+.bk-slot .ph{font-size:12px;color:var(--text3);padding-left:5px}
+.bk-pool{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:12px}
+.tile{border:1.5px solid var(--border2);background:#fff;border-radius:10px;padding:8px 13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--text);transition:all .12s}
+.tile:hover{border-color:var(--accent)}
+.tile:active{transform:scale(.94)}
+.tile.in{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ── 戰鬥 ── */
+.b-wrap{padding:16px}
+.b-arena{border-radius:20px;border:1px solid var(--border);background:linear-gradient(180deg,#d8ecf7 0%,#eef7fb 52%,#f2e2c4 52%,#ecd9b4 100%);padding:14px;position:relative;overflow:hidden}
+.b-row{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;min-height:150px}
+.b-fighter{flex:1;text-align:center}
+.b-enemy-em{font-size:74px;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.15));display:inline-block;animation:esway 3s ease-in-out infinite}
+.b-enemy-em.hit{animation:ehit .4s ease}
+@keyframes esway{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes ehit{0%{transform:translateX(0)}25%{transform:translateX(-10px) rotate(-6deg)}50%{transform:translateX(8px)}100%{transform:translateX(0)}}
+.b-pet{width:104px;height:104px;margin:0 auto;display:inline-block}
+.b-pet.hit{animation:ehit .4s ease}
+.b-hp{margin-top:6px}
+.b-hp-name{font-size:11px;font-weight:900;margin-bottom:3px}
+.b-hp-bar{height:10px;background:rgba(255,255,255,.7);border-radius:99px;overflow:hidden;border:1px solid rgba(0,0,0,.06)}
+.b-hp-fill{height:100%;border-radius:99px;background:var(--green);transition:width .4s}
+.b-hp-fill.low{background:var(--danger)}
+.b-hp-num{font-size:10px;color:var(--text2);font-weight:700;margin-top:2px}
+.b-vs{font-size:16px;font-weight:900;color:var(--text3);padding-bottom:56px}
+.b-badges{position:absolute;top:10px;left:12px;display:flex;gap:5px;z-index:2}
+.b-badge{font-size:10px;font-weight:900;background:rgba(255,255,255,.9);border-radius:99px;padding:3px 9px;color:var(--text2)}
+.b-badge.combo{color:var(--accent-dark)}
+.b-log{text-align:center;font-size:12.5px;font-weight:700;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin:11px 0;min-height:40px;line-height:1.6}
+.b-skills{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.b-skill{background:var(--surface);border:1.5px solid var(--border);border-radius:13px;padding:9px 11px;cursor:pointer;text-align:left;font-family:inherit;transition:all .12s}
+.b-skill:hover{border-color:var(--accent)}
+.b-skill:active{transform:scale(.97)}
+.b-skill .n{font-size:12.5px;font-weight:900}
+.b-skill .d{font-size:10px;color:var(--text2);margin-top:2px}
+.b-skill:disabled{opacity:.45;pointer-events:none}
+.b-flee{text-align:center;margin-top:10px;font-size:12px;color:var(--text3);text-decoration:underline;cursor:pointer}
+.b-q{margin-top:12px}
+.e-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:9px;display:flex;gap:12px;align-items:center}
+.e-em{font-size:34px;width:52px;text-align:center;flex-shrink:0}
+.e-card.locked .e-em{filter:grayscale(1);opacity:.5}
+.e-body{flex:1}
+.e-name{font-size:14px;font-weight:900}
+.e-name .jp{font-size:10px;color:var(--text3);font-weight:400;margin-left:5px}
+.e-desc{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.5}
+.e-stats{font-size:10px;color:var(--text3);font-weight:700;margin-top:3px}
 
 /* ── JOURNEY ── */
 .j-wrap{padding:16px}
-.j-title{font-size:18px;font-weight:900;margin-bottom:3px}
-.j-sub{font-size:12px;color:var(--text2);margin-bottom:16px}
 .j-stop{display:flex;gap:13px;position:relative;padding-bottom:22px}
 .j-stop:last-child{padding-bottom:0}
 .j-line{position:absolute;left:22px;top:46px;bottom:0;width:3px;background:var(--border);border-radius:99px}
@@ -163,18 +246,30 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC','Noto San
 .s-wordrow .zh{color:var(--text2);font-size:12px}
 .s-empty{font-size:12px;color:var(--text3);text-align:center;padding:10px 0}
 .s-danger{width:100%;background:transparent;border:1.5px solid var(--danger);color:var(--danger);border-radius:14px;padding:12px;font-size:13px;font-weight:900;font-family:inherit;cursor:pointer}
+.sd-input{width:100%;padding:10px 12px;border:1.5px solid var(--border2);border-radius:10px;font-size:13px;font-family:inherit;color:var(--text);outline:none;margin-bottom:8px}
+.sd-input:focus{border-color:var(--accent)}
+.sd-note{font-size:11px;color:var(--text2);line-height:1.8;background:#faf4e8;border-radius:10px;padding:10px 12px;margin-top:10px}
+.sd-note code{background:#fff;border:1px solid var(--border);border-radius:5px;padding:1px 5px;font-size:10px;word-break:break-all}
+.sd-status{font-size:12px;font-weight:700;margin-left:8px}
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gal-item{border-radius:12px;overflow:hidden;border:1px solid var(--border);cursor:pointer;position:relative;aspect-ratio:1}
+.gal-item img{width:100%;height:100%;object-fit:cover;display:block}
+.gal-cap{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.45);color:#fff;font-size:9px;padding:3px 7px;font-weight:700}
 
 /* ── MODAL / TOAST ── */
 .modal{position:fixed;inset:0;background:rgba(74,54,38,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(3px)}
 .modal.on{display:flex}
-.modal-box{background:#fff;border-radius:22px;padding:30px 24px;max-width:360px;width:100%;text-align:center;animation:pop .3s ease}
+.modal-box{background:#fff;border-radius:22px;padding:28px 22px;max-width:380px;width:100%;text-align:center;animation:pop .3s ease;max-height:86vh;overflow-y:auto}
 @keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
 .modal-box .big{font-size:52px;margin-bottom:10px}
 .modal-box h3{font-size:19px;font-weight:900;margin-bottom:8px}
 .modal-box p{font-size:13px;color:var(--text2);line-height:1.8}
 .modal-box input{width:100%;margin-top:14px;padding:12px 14px;border:1.5px solid var(--border2);border-radius:12px;font-size:15px;font-family:inherit;text-align:center;outline:none;font-weight:700;color:var(--text)}
 .modal-box input:focus{border-color:var(--accent)}
-.toast{position:fixed;bottom:78px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--text);color:#fff;font-size:13px;font-weight:700;border-radius:99px;padding:9px 20px;z-index:300;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
+.modal-box img.gen{width:100%;border-radius:14px;margin-top:12px;border:1px solid var(--border)}
+.spinner{display:inline-block;width:34px;height:34px;border:4px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:12px 0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:78px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--text);color:#fff;font-size:13px;font-weight:700;border-radius:99px;padding:9px 20px;z-index:300;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
@@ -187,7 +282,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC','Noto San
       <div class="hdr-name"><span id="h-name">ぽち</span><span class="lv" id="h-lv">Lv.1</span></div>
       <div class="hdr-right">
         <div class="hdr-chip">🔥 <span id="h-streak">0</span> 天</div>
-        <div class="hdr-chip">⭐ <span id="h-correct">0</span></div>
+        <div class="hdr-chip">⚔️ <span id="h-wins">0</span> 勝</div>
       </div>
     </div>
 
@@ -214,6 +309,11 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC','Noto San
         <div class="stat-bar"><div class="stat-fill" id="bar-mood" style="background:var(--pink)"></div></div>
         <div class="stat-val" id="val-mood">80</div>
       </div>
+      <div class="stat-row">
+        <div class="stat-ic">❤️</div><div class="stat-label">體力</div>
+        <div class="stat-bar"><div class="stat-fill" id="bar-hp" style="background:var(--danger)"></div></div>
+        <div class="stat-val" id="val-hp">--</div>
+      </div>
       <div class="xp-row">
         <div class="xp-label" id="xp-label">EXP</div>
         <div class="xp-bar"><div class="xp-fill" id="bar-xp"></div></div>
@@ -227,20 +327,31 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC','Noto San
 
     <div class="actions">
       <button class="act quiz" onclick="startQuiz()">📝 測驗覓食<span class="sub">答對拿食物</span></button>
-      <button class="act pat" onclick="patPet()">🤚 摸摸牠<span class="sub">心情 +</span></button>
+      <button class="act fight" onclick="go('battle')">⚔️ 戰鬥<span class="sub">挑戰守關妖怪</span></button>
+      <button class="act pat" onclick="patPet()">🤚 摸摸<span class="sub">心情 +</span></button>
     </div>
   </div>
 
-  <!-- QUIZ -->
+  <!-- QUIZ（覓食） -->
   <div class="page" id="pg-quiz">
     <div class="q-wrap" id="q-wrap"></div>
+  </div>
+
+  <!-- 修行 -->
+  <div class="page" id="pg-train">
+    <div class="t-wrap" id="t-wrap"></div>
+  </div>
+
+  <!-- 戰鬥 -->
+  <div class="page" id="pg-battle">
+    <div class="b-wrap" id="b-wrap"></div>
   </div>
 
   <!-- JOURNEY -->
   <div class="page" id="pg-journey">
     <div class="j-wrap">
-      <div class="j-title">🗾 日本旅程</div>
-      <div class="j-sub">累積答對題數，帶著小夥伴一路玩遍日本！</div>
+      <div class="pg-title">🗾 日本旅程</div>
+      <div class="pg-sub">每一站都有妖怪守關，打贏牠才能繼續前進！</div>
       <div id="j-list"></div>
     </div>
   </div>
@@ -248,15 +359,33 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC','Noto San
   <!-- STATS -->
   <div class="page" id="pg-stats">
     <div class="s-wrap">
-      <div class="j-title">📊 成長紀錄</div>
-      <div class="j-sub" id="s-sub">和小夥伴一起努力的足跡</div>
+      <div class="pg-title">📊 成長紀錄</div>
+      <div class="pg-sub" id="s-sub">和小夥伴一起努力的足跡</div>
       <div class="s-grid">
         <div class="s-card"><div class="s-num" id="s-days">0</div><div class="s-lbl">陪伴天數</div></div>
         <div class="s-card"><div class="s-num" id="s-streak">0</div><div class="s-lbl">連續學習</div></div>
         <div class="s-card"><div class="s-num" id="s-correct">0</div><div class="s-lbl">累積答對</div></div>
         <div class="s-card"><div class="s-num" id="s-acc">--%</div><div class="s-lbl">正確率</div></div>
-        <div class="s-card"><div class="s-num" id="s-fed">0</div><div class="s-lbl">餵食次數</div></div>
+        <div class="s-card"><div class="s-num" id="s-wins">0</div><div class="s-lbl">戰鬥勝利</div></div>
         <div class="s-card"><div class="s-num" id="s-words">0</div><div class="s-lbl">學過的單字</div></div>
+      </div>
+      <div class="s-sec">
+        <h4>🎨 繪馬牆（AI 紀念圖）</h4>
+        <div id="gallery-box"><div class="s-empty">還沒有紀念圖。打贏妖怪或在設定測試連線後，就能用 Stable Diffusion 生成！</div></div>
+      </div>
+      <div class="s-sec">
+        <h4>🖌️ Stable Diffusion 設定（本機 Forge）</h4>
+        <input class="sd-input" id="sd-url" placeholder="http://127.0.0.1:7860">
+        <button class="btn sm" onclick="sdTest()">測試連線</button>
+        <button class="btn sm ghost" onclick="sdPortrait()">生成夥伴肖像 🎨</button>
+        <span class="sd-status" id="sd-status"></span>
+        <div class="sd-note">
+          ⚠️ 需在<b>你的電腦</b>上啟動 stable-diffusion-webui-forge 並開啟 API：<br>
+          1. 編輯 <code>webui-user.bat</code>，把參數改成：<br>
+          <code>set COMMANDLINE_ARGS=--api --cors-allow-origins=*</code><br>
+          2. 重新啟動 Forge（預設網址 <code>http://127.0.0.1:7860</code>）<br>
+          3. 回來按「測試連線」。生成的圖會存在瀏覽器裡（最多保留 8 張）。
+        </div>
       </div>
       <div class="s-sec">
         <h4>😅 最常答錯（多練習牠會更開心）</h4>
@@ -271,7 +400,8 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC','Noto San
 <!-- NAV -->
 <div class="nav"><div class="nav-in">
   <div class="nav-item on" data-pg="home" onclick="go('home')"><div class="nav-ic">🐕</div>小夥伴</div>
-  <div class="nav-item" data-pg="quiz" onclick="go('quiz')"><div class="nav-ic">📝</div>測驗</div>
+  <div class="nav-item" data-pg="train" onclick="go('train')"><div class="nav-ic">🎓</div>修行</div>
+  <div class="nav-item" data-pg="battle" onclick="go('battle')"><div class="nav-ic">⚔️</div>戰鬥</div>
   <div class="nav-item" data-pg="journey" onclick="go('journey')"><div class="nav-ic">🗾</div>旅程</div>
   <div class="nav-item" data-pg="stats" onclick="go('stats')"><div class="nav-ic">📊</div>紀錄</div>
 </div></div>
@@ -281,7 +411,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC','Noto San
   <div class="modal-box">
     <div class="big">🥚</div>
     <h3>撿到一顆蛋！</h3>
-    <p>裡面好像有個想去日本旅行的小生命。<br>用日文測驗餵養牠，帶牠環遊日本吧！<br>先幫牠取個名字：</p>
+    <p>裡面好像有個想去日本旅行的小生命。<br>用日文測驗餵養牠、修行技能、擊敗守關妖怪，<br>帶牠環遊日本吧！先幫牠取個名字：</p>
     <input id="name-input" maxlength="8" placeholder="ぽち" value="ぽち">
     <button class="btn" onclick="confirmName()">開始養成 🎉</button>
   </div>
@@ -293,7 +423,19 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC','Noto San
     <div class="big" id="ev-big">🎉</div>
     <h3 id="ev-title"></h3>
     <p id="ev-text"></p>
+    <div id="ev-extra"></div>
     <button class="btn" onclick="closeEv()">太好了！</button>
+  </div>
+</div>
+
+<!-- SD MODAL -->
+<div class="modal" id="sd-modal">
+  <div class="modal-box">
+    <div class="big" id="sd-big">🎨</div>
+    <h3 id="sd-title">生成紀念圖</h3>
+    <p id="sd-text"></p>
+    <div id="sd-body"></div>
+    <button class="btn" onclick="closeSd()">關閉</button>
   </div>
 </div>
 
@@ -330,6 +472,20 @@ var VDB=[
   {week:4,day:6,theme:'旅行綜合上',words:[{jp:'りょこう',rd:'ryokou',zh:'旅行'},{jp:'かんこうあんない',rd:'kankou annai',zh:'觀光服務台'},{jp:'パンフレット',rd:'panfuretto',zh:'小冊子'},{jp:'じゆうじかん',rd:'jiyuu jikan',zh:'自由時間'},{jp:'しゃしん',rd:'shashin',zh:'照片'},{jp:'しゃしんをとる',rd:'shashin wo toru',zh:'拍照'},{jp:'いっしょに',rd:'issho ni',zh:'一起'},{jp:'ひとりで',rd:'hitori de',zh:'一個人'},{jp:'スマートフォン',rd:'sumaatofon',zh:'智慧型手機'},{jp:'じゅうでん',rd:'juuden',zh:'充電'},{jp:'WIFI',rd:'wai fai',zh:'無線網路'},{jp:'パスワード',rd:'pasuwaado',zh:'密碼'},{jp:'コンセント',rd:'konsento',zh:'插座'},{jp:'ゴミばこ',rd:'gomibako',zh:'垃圾桶'},{jp:'にゅうじょうけん',rd:'nyuujouken',zh:'入場券'}]},
   {week:4,day:7,theme:'旅行綜合下',words:[{jp:'もうすぐ',rd:'mousugu',zh:'快到了'},{jp:'まだ',rd:'mada',zh:'還沒'},{jp:'もう',rd:'mou',zh:'已經'},{jp:'ぜんぶ',rd:'zenbu',zh:'全部'},{jp:'すこし',rd:'sukoshi',zh:'一點點'},{jp:'たくさん',rd:'takusan',zh:'很多'},{jp:'ちょっと',rd:'chotto',zh:'稍微'},{jp:'とても',rd:'totemo',zh:'非常'},{jp:'あまり',rd:'amari',zh:'不太（搭配否定）'},{jp:'ぜんぜん',rd:'zenzen',zh:'完全不'},{jp:'だいたい',rd:'daitai',zh:'大概'},{jp:'はじめて',rd:'hajimete',zh:'第一次'},{jp:'またきたい',rd:'mata kitai',zh:'還想再來'},{jp:'たのしかった',rd:'tanoshikatta',zh:'很開心（過去）'},{jp:'またね',rd:'matane',zh:'下次見'}]},
 ];
+var GDB=[
+  {week:1,id:'w1g1',title:'〜は〜です',sub:'「…是…」基本句型',tag:'核心',pattern:{jp:'〔名詞A〕は〔名詞B〕です',rd:'[A] wa [B] desu',zh:'A 是 B'},note:'「は」在這裡唸「wa」不唸「ha」，是日文最基礎的句型，相當於中文的「是」。',examples:[{jp:'わたしはたびびとです。',rd:'Watashi wa tabibito desu.',zh:'我是旅行者。'},{jp:'これはえきです。',rd:'Kore wa eki desu.',zh:'這裡是車站。'},{jp:'あのひとはてんいんさんです。',rd:'Ano hito wa ten\'in san desu.',zh:'那個人是店員。'}],quizzes:[{q:'「我是台灣人。」',hint:'台灣人＝たいわんじん',choices:['わたしはたいわんじんです。','わたしがたいわんじんです。','わたしもたいわんじんです。','わたしにたいわんじんです。'],ans:0,exp:'わたし は たいわんじん です ── A は B です 基本句型。'},{q:'「這個是菜單。」',hint:'菜單＝メニュー，這個＝これ',choices:['これにメニューです。','これはメニューです。','これをメニューです。','これでメニューです。'],ans:1,exp:'「これ は メニュー です」，は 表示「是」。'}]},
+  {week:1,id:'w1g2',title:'〜はじゃないです',sub:'「…不是…」否定',tag:'核心',pattern:{jp:'〔名詞〕は〔名詞〕じゃないです',rd:'[A] wa [B] ja nai desu',zh:'A 不是 B'},note:'「じゃないです」是口語否定，等同正式的「ではありません」，旅行中口語版完全 OK。',examples:[{jp:'これはえきじゃないです。',rd:'Kore wa eki ja nai desu.',zh:'這裡不是車站。'},{jp:'わたしはにほんじんじゃないです。',rd:'Watashi wa nihonjin ja nai desu.',zh:'我不是日本人。'},{jp:'ここはホテルじゃないです。',rd:'Koko wa hoteru ja nai desu.',zh:'這裡不是飯店。'}],quizzes:[{q:'「我不是學生。」',hint:'學生＝がくせい',choices:['わたしはがくせいです。','わたしはがくせいじゃないです。','わたしがくせいではあります。','わたしにがくせいじゃない。'],ans:1,exp:'否定用「じゃないです」，接在名詞後面。'},{q:'「這裡不是飯店。」',hint:'飯店＝ホテル，這裡＝ここ',choices:['ここはホテルです。','ここにホテルじゃないです。','ここはホテルじゃないです。','ここがホテルじゃないです。'],ans:2,exp:'ここ は ホテル じゃないです。'}]},
+  {week:1,id:'w1g3',title:'〜はどこですか？',sub:'詢問地點萬用句',tag:'旅行必備',pattern:{jp:'〔場所〕はどこですか？',rd:'[basho] wa doko desu ka?',zh:'〜在哪裡？'},note:'「か」放句尾表疑問。旅行最常用句型，空格填地點就能問路！',examples:[{jp:'トイレはどこですか？',rd:'Toire wa doko desu ka?',zh:'廁所在哪裡？'},{jp:'えきはどこですか？',rd:'Eki wa doko desu ka?',zh:'車站在哪裡？'},{jp:'このホテルはどこですか？',rd:'Kono hoteru wa doko desu ka?',zh:'這間飯店在哪裡？'}],quizzes:[{q:'「出口在哪裡？」',hint:'出口＝でぐち',choices:['でぐちはどこですか？','でぐちはなんですか？','でぐちはいつですか？','でぐちはだれですか？'],ans:0,exp:'詢問地點用「どこですか」！'},{q:'「便利商店在哪裡？」',hint:'便利商店＝コンビニ',choices:['コンビニはなんですか？','コンビニにどこですか？','コンビニはどこですか？','コンビニがどこですか？'],ans:2,exp:'コンビニ は どこ です か？'}]},
+  {week:2,id:'w2g1',title:'〜をください',sub:'「請給我…」點餐購物',tag:'旅行必備',pattern:{jp:'〔もの〕をください',rd:'[mono] wo kudasai',zh:'請給我〜'},note:'「を」是受格助詞，「ください」是「請給我」。點餐購物最直接的說法。',examples:[{jp:'これをください。',rd:'Kore wo kudasai.',zh:'請給我這個。'},{jp:'みずをふたつください。',rd:'Mizu wo futatsu kudasai.',zh:'請給我兩杯水。'},{jp:'このサイズをください。',rd:'Kono saizu wo kudasai.',zh:'請給我這個尺寸。'}],quizzes:[{q:'「請給我菜單。」',hint:'菜單＝メニュー',choices:['メニューがください。','メニューにください。','メニューをください。','メニューはください。'],ans:2,exp:'「を」是受格助詞，固定搭配「ください」。'},{q:'「請給我三個。」',hint:'三個＝みっつ',choices:['みっつはください。','みっつをください。','みっつにください。','みっつからください。'],ans:1,exp:'〔數量〕をください。'}]},
+  {week:2,id:'w2g2',title:'〜はいくらですか？',sub:'詢問價格',tag:'旅行必備',pattern:{jp:'〔もの〕はいくらですか？',rd:'[mono] wa ikura desu ka?',zh:'〜多少錢？'},note:'「いくら」是「多少錢」，結構和「どこですか」完全一樣，換個疑問詞就好！',examples:[{jp:'これはいくらですか？',rd:'Kore wa ikura desu ka?',zh:'這個多少錢？'},{jp:'ひとつはいくらですか？',rd:'Hitotsu wa ikura desu ka?',zh:'一個多少錢？'},{jp:'このセットはいくらですか？',rd:'Kono setto wa ikura desu ka?',zh:'這個套餐多少錢？'}],quizzes:[{q:'「這個蛋糕多少錢？」',hint:'蛋糕＝ケーキ',choices:['このケーキはどこですか？','このケーキはいくらですか？','このケーキはなんですか？','このケーキはいつですか？'],ans:1,exp:'問價格用「いくらですか」！'},{q:'「一個多少錢？」',hint:'一個＝ひとつ',choices:['ひとつはどこですか？','ひとつがいくらですか？','ひとつはいくらですか？','ひとつをいくらですか？'],ans:2,exp:'ひとつ は いくら です か？'}]},
+  {week:2,id:'w2g3',title:'〜でいいですか？',sub:'確認方式手段',tag:'實用',pattern:{jp:'〔手段〕でいいですか？',rd:'[shudan] de ii desu ka?',zh:'用〜可以嗎？'},note:'「で」表示手段或方式，「いいですか」是「可以嗎」，常用於確認付款方式。',examples:[{jp:'カードでいいですか？',rd:'Kaado de ii desu ka?',zh:'用信用卡可以嗎？'},{jp:'えいごでいいですか？',rd:'Eigo de ii desu ka?',zh:'用英文可以嗎？'},{jp:'これでいいですか？',rd:'Kore de ii desu ka?',zh:'這樣可以嗎？'}],quizzes:[{q:'「用現金可以嗎？」',hint:'現金＝げんきん',choices:['げんきんはいいですか？','げんきんをいいですか？','げんきんでいいですか？','げんきんにいいですか？'],ans:2,exp:'「で」表手段，「いいですか」詢問是否可以。'},{q:'「用英文可以嗎？」',hint:'英文＝えいご',choices:['えいごにいいですか？','えいごはいいですか？','えいごをいいですか？','えいごでいいですか？'],ans:3,exp:'えいご で いいですか。'}]},
+  {week:3,id:'w3g1',title:'〜に行きます',sub:'「去〜」目的地',tag:'核心',pattern:{jp:'〔場所〕に行きます',rd:'[basho] ni ikimasu',zh:'去〜'},note:'「に」表示方向或目的地，「行きます」是「去」的禮貌形。',examples:[{jp:'えきにいきます。',rd:'Eki ni ikimasu.',zh:'去車站。'},{jp:'とうきょうにいきます。',rd:'Toukyou ni ikimasu.',zh:'去東京。'},{jp:'このホテルにいきたいです。',rd:'Kono hoteru ni ikitai desu.',zh:'我想去這間飯店。'}],quizzes:[{q:'「我去京都。」',hint:'京都＝きょうと',choices:['きょうとをいきます。','きょうとがいきます。','きょうとにいきます。','きょうとはいきます。'],ans:2,exp:'移動目的地用「に」。'},{q:'「去便利商店。」',hint:'便利商店＝コンビニ',choices:['コンビニへいきます。','コンビニをいきます。','コンビニにいきます。','コンビニのいきます。'],ans:2,exp:'「に」表示方向目的地。'}]},
+  {week:3,id:'w3g2',title:'〜てください',sub:'「請〜」禮貌請求',tag:'旅行必備',pattern:{jp:'〔動詞て形〕ください',rd:'[doushi te-kei] kudasai',zh:'請〜'},note:'「て形」接「ください」就是「請〜」。幾個旅行常用て形要背下來！',examples:[{jp:'まっすぐいってください。',rd:'Massugu itte kudasai.',zh:'請直走。'},{jp:'ゆっくりはなしてください。',rd:'Yukkuri hanashite kudasai.',zh:'請說慢一點。'},{jp:'しゃしんをとってください。',rd:'Shashin wo totte kudasai.',zh:'請幫我拍照。'}],quizzes:[{q:'「請等一下。」',hint:'等＝まつ → て形：まって',choices:['まつください。','まちください。','まってください。','まてください。'],ans:2,exp:'「まつ」的て形是「まって」。'},{q:'「請說慢一點。」',hint:'說＝はなす → て形：はなして',choices:['ゆっくりはなすください。','ゆっくりはなしてください。','ゆっくりはなしください。','ゆっくりはなくてください。'],ans:1,exp:'「はなす」的て形是「はなして」。'}]},
+  {week:3,id:'w3g3',title:'〜たいです',sub:'「想〜」表達願望',tag:'實用',pattern:{jp:'〔動詞ます形語幹〕たいです',rd:'[doushi-masu gokan] tai desu',zh:'想〜'},note:'把動詞「ます」去掉，加「たいです」就是「想〜」。食べます → 食べたいです（想吃）。',examples:[{jp:'すしをたべたいです。',rd:'Sushi wo tabetai desu.',zh:'我想吃壽司。'},{jp:'おんせんにはいりたいです。',rd:'Onsen ni hairitai desu.',zh:'我想泡溫泉。'},{jp:'きょうとにいきたいです。',rd:'Kyouto ni ikitai desu.',zh:'我想去京都。'}],quizzes:[{q:'「我想喝咖啡。」',hint:'喝＝のみます → のみたいです',choices:['コーヒーをのみます。','コーヒーをのみたいです。','コーヒーをのむです。','コーヒーがのみたいです。'],ans:1,exp:'「のみます」去ます加たいです＝のみたいです。'},{q:'「我想拍照。」',hint:'拍照＝とります → とりたいです',choices:['しゃしんをとりたいです。','しゃしんをとってたいです。','しゃしんをとりますたいです。','しゃしんをとたいです。'],ans:0,exp:'「とります」→「とり」＋「たいです」。'}]},
+  {week:4,id:'w4g1',title:'〜ましたか？',sub:'「〜了嗎？」過去式',tag:'核心',pattern:{jp:'〔動詞〕ましたか？',rd:'[doushi] mashita ka?',zh:'〜了嗎？'},note:'「ます」→「ました」是現在式變過去式，加「か」是疑問句。',examples:[{jp:'チェックインしましたか？',rd:'Chekkuin shimashita ka?',zh:'辦理入住了嗎？'},{jp:'もうたべましたか？',rd:'Mou tabemashita ka?',zh:'已經吃了嗎？'},{jp:'よやくしましたか？',rd:'Yoyaku shimashita ka?',zh:'預約了嗎？'}],quizzes:[{q:'「已經買票了嗎？」',hint:'買＝かいます→かいました',choices:['きっぷをかいますか？','きっぷをかいましたか？','きっぷをかうか？','きっぷをかったか？'],ans:1,exp:'過去式疑問：ます→ました＋か。'},{q:'「去了大阪嗎？」',hint:'去＝いきます→いきました',choices:['おおさかにいきますか？','おおさかにいきましたか？','おおさかにいきたいですか？','おおさかにいきますたか？'],ans:1,exp:'「いきます→いきました」，加か是「去了嗎？」'}]},
+  {week:4,id:'w4g2',title:'〜がすきです',sub:'「喜歡〜」好惡表達',tag:'實用',pattern:{jp:'〔もの〕がすきです／きらいです',rd:'[mono] ga suki/kirai desu',zh:'喜歡／討厭〜'},note:'注意！表達喜好用「が」不用「は」。すき＝喜歡，きらい＝討厭，だいすき＝超喜歡。',examples:[{jp:'すしがすきです。',rd:'Sushi ga suki desu.',zh:'我喜歡壽司。'},{jp:'からいたべものがきらいです。',rd:'Karai tabemono ga kirai desu.',zh:'我討厭辣的食物。'},{jp:'おんせんがだいすきです。',rd:'Onsen ga daisuki desu.',zh:'我超愛溫泉。'}],quizzes:[{q:'「我喜歡拉麵。」',hint:'拉麵＝ラーメン，喜好用「が」',choices:['ラーメンはすきです。','ラーメンをすきです。','ラーメンがすきです。','ラーメンにすきです。'],ans:2,exp:'表達喜好固定用「が」。'},{q:'「我非常喜歡日本。」',hint:'非常喜歡＝だいすき',choices:['にほんはだいすきです。','にほんをだいすきです。','にほんにだいすきです。','にほんがだいすきです。'],ans:3,exp:'すき/きらい/だいすき 前面固定用「が」。'}]},
+  {week:4,id:'w4g3',title:'〜てもいいですか？',sub:'「可以〜嗎？」請求許可',tag:'旅行必備',pattern:{jp:'〔動詞て形〕もいいですか？',rd:'[doushi te-kei] mo ii desu ka?',zh:'可以〜嗎？'},note:'「てもいいですか」是請求許可的禮貌說法，比直接要求更有禮貌。',examples:[{jp:'しゃしんをとってもいいですか？',rd:'Shashin wo totte mo ii desu ka?',zh:'可以拍照嗎？'},{jp:'ここにすわってもいいですか？',rd:'Koko ni suwatte mo ii desu ka?',zh:'可以坐這裡嗎？'},{jp:'クレジットカードをつかってもいいですか？',rd:'Kurejitto kaado wo tsukatte mo ii desu ka?',zh:'可以用信用卡嗎？'}],quizzes:[{q:'「可以試穿嗎？」',hint:'試穿→て形：きてみて',choices:['きてみるもいいですか？','きてみてもいいですか？','きてもいいですか？','きてみていいですか？'],ans:1,exp:'「きてみて」＋「もいいですか」＝可以試穿嗎？'},{q:'「可以進去嗎？」',hint:'進去＝はいる → て形：はいって',choices:['はいるもいいですか？','はいってもいいですか？','はいりもいいですか？','はいりてもいいですか？'],ans:1,exp:'「はいる」的て形是「はいって」。'}]},
+];
 
 /* ── 常數 ── */
 var FOODS=[
@@ -342,42 +498,80 @@ var FOODS=[
   {id:'matcha',  em:'🍵', name:'抹茶',     jp:'まっちゃ',  hunger:8}
 ];
 var STOPS=[
-  {name:'成田機場', jp:'なりたくうこう', em:'🛫', req:0,   desc:'旅程的起點，小夥伴既緊張又興奮！'},
-  {name:'東京',     jp:'とうきょう',     em:'🗼', req:15,  desc:'晴空塔、澀谷、秋葉原，逛到腿軟。'},
-  {name:'鎌倉',     jp:'かまくら',       em:'🎐', req:35,  desc:'看大佛、吃小町通的點心，海風好舒服。'},
-  {name:'富士山',   jp:'ふじさん',       em:'🗻', req:60,  desc:'在河口湖畔眺望富士山，太感動了。'},
-  {name:'名古屋',   jp:'なごや',         em:'🏯', req:90,  desc:'名古屋城與味噌豬排，吃貨的天堂。'},
-  {name:'京都',     jp:'きょうと',       em:'⛩️', req:130, desc:'穿和服逛清水寺，小夥伴超上鏡。'},
-  {name:'大阪',     jp:'おおさか',       em:'🐙', req:175, desc:'道頓堀的章魚燒一口接一口。'},
-  {name:'沖繩',     jp:'おきなわ',       em:'🏖️', req:230, desc:'碧海藍天！環遊日本達成，畢業旅行！'}
+  {name:'成田機場', jp:'なりたくうこう', em:'🛫', desc:'旅程的起點，小夥伴既緊張又興奮！', en:'Narita airport with airplane'},
+  {name:'東京',     jp:'とうきょう',     em:'🗼', desc:'晴空塔、澀谷、秋葉原，逛到腿軟。', en:'Tokyo tower and city street'},
+  {name:'鎌倉',     jp:'かまくら',       em:'🎐', desc:'看大佛、吃小町通的點心，海風好舒服。', en:'Kamakura great buddha and seaside'},
+  {name:'富士山',   jp:'ふじさん',       em:'🗻', desc:'在河口湖畔眺望富士山，太感動了。', en:'Mount Fuji and lake Kawaguchi'},
+  {name:'名古屋',   jp:'なごや',         em:'🏯', desc:'名古屋城與味噌豬排，吃貨的天堂。', en:'Nagoya castle'},
+  {name:'京都',     jp:'きょうと',       em:'⛩️', desc:'穿和服逛清水寺，小夥伴超上鏡。', en:'Kyoto red torii gates shrine'},
+  {name:'大阪',     jp:'おおさか',       em:'🐙', desc:'道頓堀的章魚燒一口接一口。', en:'Osaka Dotonbori neon street'},
+  {name:'沖繩',     jp:'おきなわ',       em:'🏖️', desc:'碧海藍天！環遊日本達成，畢業旅行！', en:'Okinawa tropical beach'}
 ];
+/* 守關妖怪：擊敗 ENEMIES[i] 就能前進到 STOPS[i+1] */
+var ENEMIES=[
+  {name:'迷路狸貓',   jp:'まよいだぬき',   em:'🦝', hp:55,  atk:7,  en:'mischievous tanuki raccoon dog spirit', desc:'愛把路牌轉方向的搗蛋鬼。'},
+  {name:'海風河童',   jp:'うみかぜかっぱ', em:'🐢', hp:85,  atk:10, en:'kappa water imp youkai', desc:'守著鎌倉海邊，最怕有禮貌的問候。'},
+  {name:'雲海天狗',   jp:'うんかいてんぐ', em:'👺', hp:125, atk:13, en:'tengu goblin with long nose', desc:'盤踞富士山的傲慢天狗。'},
+  {name:'金鯱將軍',   jp:'きんのしゃちほこ',em:'🐡', hp:170, atk:16, en:'golden shachihoko fish samurai', desc:'從名古屋城屋頂跳下來的金光閃閃將軍。'},
+  {name:'九尾狐仙',   jp:'きゅうびのきつね',em:'🦊', hp:220, atk:20, en:'nine-tailed fox spirit with red torii', desc:'伏見稻荷的千年狐仙，考題特別刁鑽。'},
+  {name:'章魚燒大王', jp:'たこやきだいおう',em:'🐙', hp:280, atk:24, en:'giant octopus king holding takoyaki', desc:'吃遍道頓堀的美食霸主。'},
+  {name:'風獅爺',     jp:'シーサー',       em:'🦁', hp:350, atk:28, en:'shisa lion guardian statue', desc:'沖繩最終守護者，堂堂正正的最強對手！'}
+];
+var SKILLS=[
+  {id:'aisatsu',  name:'元氣招呼拳', em:'👋', type:'atk',   power:13, themes:['打招呼','基本應答'], desc:'活力滿滿的問候重拳。'},
+  {id:'suuji',    name:'數字連擊',   em:'🔢', type:'multi', power:8,  hits:2, themes:['數字1-15','數字16-大數','時間日期'], desc:'數到哪打到哪，一次攻擊兩下。'},
+  {id:'gurume',   name:'美食大胃王', em:'🍜', type:'drain', power:12, themes:['食物','飲料','餐廳點餐'], desc:'邊吃邊打，吸收傷害 40% 回復體力。'},
+  {id:'densha',   name:'電車突進',   em:'🚄', type:'atk',   power:19, themes:['交通工具','車站電車','問路','地點方向'], desc:'新幹線等級的高威力衝撞。'},
+  {id:'kaimono',  name:'殺價斬',     em:'💴', type:'atk2',  power:15, themes:['購物','結帳付款','便利商店'], desc:'攻擊之餘有機率搶到食物。'},
+  {id:'tenki',    name:'天氣占卜',   em:'⛅', type:'atk',   power:16, themes:['天氣','疑問詞','觀光景點'], desc:'呼風喚雨的觀光系魔法。'},
+  {id:'keigo',    name:'敬語結界',   em:'🙏', type:'shield',power:0,  grammar:true, desc:'有禮走遍天下：下次受傷減半＋回復 12。'},
+  {id:'kyuukyuu', name:'旅人救急包', em:'🩹', type:'heal',  power:0,  themes:['緊急情況','藥局健康','住宿飯店'], desc:'回復最大體力 30%（技能等級再加成）。'}
+];
+var TYPE_LABEL={atk:'攻擊',multi:'連擊',drain:'吸收',atk2:'攻擊+',shield:'結界',heal:'回復'};
 var STAGES=[
-  {min:1, name:'蛋',       label:'EGG'},
-  {min:2, name:'幼犬',     label:'BABY'},
-  {min:5, name:'小柴',     label:'KID'},
-  {min:9, name:'旅行柴',   label:'TRAVELER'}
+  {min:1, name:'蛋'},
+  {min:2, name:'幼犬'},
+  {min:5, name:'小柴'},
+  {min:9, name:'旅行柴'}
 ];
-var PAT_CD=8*60*1000;          /* 摸摸冷卻 8 分鐘 */
-var HUNGER_DECAY=3, MOOD_DECAY=2.5;  /* 每小時 */
-var MAX_OFFLINE_H=20;          /* 離線衰減上限（小時） */
-var QUIZ_LEN=5;
+var STAGE_EN=[
+  'cute speckled egg with tiny eyes',
+  'tiny shiba inu puppy wearing eggshell hat',
+  'young shiba inu dog wearing red neckerchief',
+  'shiba inu dog wearing straw hat and red neckerchief, traveler'
+];
+var PAT_CD=8*60*1000;
+var HUNGER_DECAY=3, MOOD_DECAY=2.5;
+var MAX_OFFLINE_H=20;
+var QUIZ_LEN=5, TOKKUN_LEN=6, TOKKUN_PASS=4, GTOKKUN_LEN=4, GTOKKUN_PASS=3;
+var SKILL_MAX_LV=5;
 
 /* ── 狀態 ── */
 var DEF={
   name:'', born:0, xp:0, hunger:80, mood:80, lastTick:Date.now(),
   inv:{}, correct:0, wrong:0, fed:0, pats:0, lastPat:0,
-  streak:0, lastDay:'', days:{}, learned:{}, wrongs:{}, stopsSeen:1
+  streak:0, lastDay:'', days:{}, learned:{}, wrongs:{}, stopsSeen:1,
+  skills:{aisatsu:{lv:1,exp:0}}, beaten:0, wins:0, losses:0,
+  gallery:[], sdUrl:'http://127.0.0.1:7860', tokkunDone:0, bunkeiDone:0
 };
 var S=JSON.parse(JSON.stringify(DEF));
-function save(){try{localStorage.setItem('jpTama1',JSON.stringify(S));}catch(e){}}
+function save(){try{localStorage.setItem('jpTama1',JSON.stringify(S));}catch(e){
+  /* 容量不足時丟掉最舊的圖再試一次 */
+  try{if(S.gallery.length){S.gallery.shift();localStorage.setItem('jpTama1',JSON.stringify(S));}}catch(e2){}
+}}
 function load(){
   try{
     var d=localStorage.getItem('jpTama1');
     if(d){var p=JSON.parse(d);Object.keys(p).forEach(function(k){S[k]=p[k];});}
   }catch(e){}
+  /* 舊存檔遷移：以前用答對數推進旅程 */
+  if(!S.skills||!S.skills.aisatsu)S.skills=S.skills||{},S.skills.aisatsu=S.skills.aisatsu||{lv:1,exp:0};
+  if(S.beaten===undefined)S.beaten=Math.max(0,(S.stopsSeen||1)-1);
+  if(!S.gallery)S.gallery=[];
+  if(!S.sdUrl)S.sdUrl='http://127.0.0.1:7860';
 }
 
-/* ── 等級 ── */
+/* ── 等級 / 能力值 ── */
 function levelInfo(){
   var lv=1,rem=S.xp,need=40;
   while(rem>=need){rem-=need;lv++;need=40+(lv-1)*22;}
@@ -388,18 +582,80 @@ function stageOf(lv){
   for(var i=0;i<STAGES.length;i++){if(lv>=STAGES[i].min)st=i;}
   return st;
 }
-function stopIndex(){
-  var idx=0;
-  for(var i=0;i<STOPS.length;i++){if(S.correct>=STOPS[i].req)idx=i;}
-  return idx;
+function maxHP(){return 45+levelInfo().lv*9+Math.floor(S.mood/5);}
+function stopIndex(){return Math.min(S.beaten,STOPS.length-1);}
+function skillState(id){return S.skills[id]||null;}
+function skillNeed(lv){return 10*lv;}  /* 升到 lv+1 所需 exp */
+function skillMult(lv){return 1+0.25*(lv-1);}
+function addSkillExp(id,n){
+  var st=S.skills[id];if(!st)return;
+  if(st.lv>=SKILL_MAX_LV)return;
+  st.exp+=n;
+  while(st.lv<SKILL_MAX_LV&&st.exp>=skillNeed(st.lv)){
+    st.exp-=skillNeed(st.lv);st.lv++;
+    toast('技能升級！'+skillDef(id).name+' Lv.'+st.lv+' ✨');
+  }
+  if(st.lv>=SKILL_MAX_LV)st.exp=0;
+}
+function skillDef(id){for(var i=0;i<SKILLS.length;i++)if(SKILLS[i].id===id)return SKILLS[i];return null;}
+
+/* ── 題庫工具 ── */
+function poolByThemes(themes){
+  var pool=[];
+  VDB.forEach(function(d){
+    if(!themes||themes.indexOf(d.theme)>=0)
+      d.words.forEach(function(w){pool.push({w:w,theme:d.theme});});
+  });
+  if(pool.length<8){ /* 保險：主題太少就用全庫 */
+    VDB.forEach(function(d){d.words.forEach(function(w){pool.push({w:w,theme:d.theme});});});
+  }
+  return pool;
+}
+function makeVQ(pool){
+  var item=pool[Math.floor(Math.random()*pool.length)];
+  var dir=Math.random()<0.5?'j2z':'z2j';
+  var opts=[dir==='j2z'?item.w.zh:item.w.jp],seen={};seen[opts[0]]=true;
+  var all=poolByThemes(null),guard=0;
+  var src=pool.length>=12?pool:all;
+  while(opts.length<4&&guard<400){
+    guard++;
+    var o=src[Math.floor(Math.random()*src.length)].w;
+    var v=dir==='j2z'?o.zh:o.jp;
+    if(seen[v])continue;
+    seen[v]=true;opts.push(v);
+  }
+  shuffle(opts);
+  return {kind:'v',w:item.w,theme:item.theme,dir:dir,opts:opts,
+    prompt:dir==='j2z'?item.w.jp:item.w.zh,
+    rd:dir==='j2z'?item.w.rd:'',
+    right:dir==='j2z'?item.w.zh:item.w.jp,
+    ask:dir==='j2z'?'這是什麼意思？':'日文怎麼說？'};
+}
+function makeGQ(){
+  var g=GDB[Math.floor(Math.random()*GDB.length)];
+  var qz=g.quizzes[Math.floor(Math.random()*g.quizzes.length)];
+  return {kind:'g',g:g,theme:g.title,opts:qz.choices.slice(),
+    prompt:qz.q,rd:qz.hint?('提示：'+qz.hint):'',right:qz.choices[qz.ans],exp:qz.exp,
+    ask:'選出正確的日文'};
+}
+function shuffle(a){for(var j=a.length-1;j>0;j--){var r=Math.floor(Math.random()*(j+1));var t=a[j];a[j]=a[r];a[r]=t;}return a;}
+function recordAnswer(q,ok){
+  markStudy();
+  if(q.kind==='v'){
+    var key=q.w.jp+'|||'+q.w.zh;
+    if(ok){S.correct++;S.learned[key]={jp:q.w.jp,rd:q.w.rd,zh:q.w.zh};}
+    else{S.wrong++;S.wrongs[key]=(S.wrongs[key]||0)+1;}
+  }else{
+    if(ok)S.correct++;else S.wrong++;
+  }
 }
 
 /* ── 寵物繪製（SVG）── */
 function petSVG(){
   var lv=levelInfo().lv, st=stageOf(lv);
   var hungry=S.hunger<28, sad=S.mood<28;
-  if(st===0){ /* 蛋 */
-    var crack=lv>=1&&levelInfo().into>20;
+  if(st===0){
+    var crack=levelInfo().into>20;
     return '<svg viewBox="0 0 200 200">'+
       '<ellipse cx="100" cy="178" rx="52" ry="9" fill="rgba(0,0,0,.08)"/>'+
       '<path d="M100 30 C 145 30 158 90 158 122 C 158 158 132 178 100 178 C 68 178 42 158 42 122 C 42 90 55 30 100 30 Z" fill="#fffdf5" stroke="#e8d9bd" stroke-width="3"/>'+
@@ -408,7 +664,6 @@ function petSVG(){
       '<circle cx="88" cy="105" r="3.5" fill="#4a3626"/><circle cx="112" cy="105" r="3.5" fill="#4a3626"/>'+
       '</svg>';
   }
-  /* 柴犬本體 */
   var scale=st===1?0.82:st===2?0.94:1;
   var body='#eba05e', cream='#fff7ea', dark='#4a3626';
   var eyes, mouth, cheeks='', extra='', tear='';
@@ -427,12 +682,12 @@ function petSVG(){
          '<circle cx="78" cy="102" r="1.8" fill="#fff"/><circle cx="126" cy="102" r="1.8" fill="#fff"/>';
     mouth='<path d="M92 138 Q100 143 108 138" fill="none" stroke="'+dark+'" stroke-width="3.5" stroke-linecap="round"/>';
   }
-  if(st===1){ /* 幼犬：蛋殼帽 */
+  if(st===1){
     extra='<path d="M70 52 L80 36 L90 50 L100 34 L110 50 L120 36 L130 52 Q100 40 70 52 Z" fill="#fffdf5" stroke="#e8d9bd" stroke-width="2.5" transform="translate(0,-8)"/>';
-  }else if(st===2){ /* 小柴：紅領巾 */
+  }else if(st===2){
     extra='<path d="M62 152 Q100 170 138 152 L134 166 Q100 182 66 166 Z" fill="#e05a4e"/>'+
           '<path d="M96 162 l8 0 l-2 16 l-4 0 Z" fill="#c94a3e"/>';
-  }else if(st===3){ /* 旅行柴：草帽＋領巾 */
+  }else if(st===3){
     extra='<path d="M62 152 Q100 170 138 152 L134 166 Q100 182 66 166 Z" fill="#e05a4e"/>'+
           '<path d="M96 162 l8 0 l-2 16 l-4 0 Z" fill="#c94a3e"/>'+
           '<ellipse cx="100" cy="52" rx="52" ry="12" fill="#f2d38c" stroke="#d8b264" stroke-width="2"/>'+
@@ -441,14 +696,11 @@ function petSVG(){
   }
   return '<svg viewBox="0 0 200 200" style="transform:scale('+scale+');transform-origin:bottom center">'+
     '<ellipse cx="100" cy="180" rx="56" ry="9" fill="rgba(0,0,0,.08)"/>'+
-    /* 耳朵 */
     '<path d="M52 76 L62 34 L92 62 Z" fill="'+body+'" stroke="'+body+'" stroke-width="4" stroke-linejoin="round"/>'+
     '<path d="M148 76 L138 34 L108 62 Z" fill="'+body+'" stroke="'+body+'" stroke-width="4" stroke-linejoin="round"/>'+
     '<path d="M62 66 L66 46 L82 60 Z" fill="#f7d3b0"/>'+
     '<path d="M138 66 L134 46 L118 60 Z" fill="#f7d3b0"/>'+
-    /* 頭 */
     '<ellipse cx="100" cy="112" rx="62" ry="56" fill="'+body+'"/>'+
-    /* 白臉頰 */
     '<path d="M100 88 C 128 88 142 110 140 132 C 138 154 122 166 100 166 C 78 166 62 154 60 132 C 58 110 72 88 100 88 Z" fill="'+cream+'"/>'+
     '<path d="M58 96 Q72 78 92 80 L88 96 Z" fill="'+cream+'" opacity=".9"/>'+
     '<path d="M142 96 Q128 78 108 80 L112 96 Z" fill="'+cream+'" opacity=".9"/>'+
@@ -459,33 +711,33 @@ function petSVG(){
 }
 
 /* ── 渲染 ── */
-function fmtBar(id,vid,v){
+function fmtBar(id,vid,v,max){
   var el=document.getElementById(id);
-  el.style.width=v+'%';
+  var pct=max?Math.round(v/max*100):v;
+  el.style.width=pct+'%';
   document.getElementById(vid).textContent=Math.round(v);
   if(id==='bar-hunger') el.style.background=v<28?'var(--danger)':v<55?'#f5c445':'var(--green)';
   if(id==='bar-mood')   el.style.background=v<28?'var(--danger)':'var(--pink)';
 }
 function render(){
-  var li=levelInfo(), st=stageOf(li.lv), stopIdx=stopIndex(), stop=STOPS[stopIdx];
+  var li=levelInfo(), st=stageOf(li.lv), stop=STOPS[stopIndex()];
   document.getElementById('h-name').textContent=S.name||'？？？';
   document.getElementById('h-lv').textContent='Lv.'+li.lv+'・'+STAGES[st].name;
   document.getElementById('h-streak').textContent=S.streak;
-  document.getElementById('h-correct').textContent=S.correct;
+  document.getElementById('h-wins').textContent=S.wins;
   fmtBar('bar-hunger','val-hunger',S.hunger);
   fmtBar('bar-mood','val-mood',S.mood);
+  fmtBar('bar-hp','val-hp',maxHP(),maxHP());
+  document.getElementById('bar-hp').style.width='100%';
   document.getElementById('bar-xp').style.width=Math.round(li.into/li.need*100)+'%';
   document.getElementById('xp-label').textContent='EXP '+li.into+' / '+li.need;
-  /* 場景 */
   document.getElementById('scene-loc').textContent='📍 '+stop.name+'（'+stop.jp+'）';
   document.getElementById('scene-deco').textContent=stop.em;
   var h=new Date().getHours();
   document.getElementById('scene').classList.toggle('night',h>=19||h<5);
-  /* 寵物 */
   var pet=document.getElementById('pet');
   pet.innerHTML=petSVG();
   pet.classList.toggle('sadmove',(S.hunger<28||S.mood<28)&&st>0);
-  /* 背包 */
   var row=document.getElementById('inv-row'),html='',total=0;
   FOODS.forEach(function(f){
     var n=S.inv[f.id]||0;total+=n;
@@ -499,12 +751,13 @@ function renderJourney(){
   var idx=stopIndex(),html='';
   STOPS.forEach(function(s,i){
     var cls=i<idx?'done':i===idx?'now':'lock';
+    var guard=i>0?ENEMIES[i-1]:null;
     html+='<div class="j-stop '+cls+'">'+
       (i<STOPS.length-1?'<div class="j-line"></div>':'')+
       '<div class="j-dot">'+s.em+'</div>'+
       '<div class="j-info"><div class="j-name">'+s.name+'<span class="jp">'+s.jp+'</span>'+(i===idx?'<span class="j-now-tag">目前位置</span>':'')+'</div>'+
       '<div class="j-desc">'+s.desc+'</div>'+
-      (i>idx?'<div class="j-req">還差 <b>'+(s.req-S.correct)+'</b> 題答對就出發</div>':'')+
+      (i>idx?'<div class="j-req">守關妖怪：<b>'+guard.em+' '+guard.name+'</b>'+(i===idx+1?'（可挑戰！）':'')+'</div>':'')+
       '</div></div>';
   });
   document.getElementById('j-list').innerHTML=html;
@@ -516,17 +769,20 @@ function renderStats(){
   document.getElementById('s-streak').textContent=S.streak;
   document.getElementById('s-correct').textContent=S.correct;
   document.getElementById('s-acc').textContent=tot?Math.round(S.correct/tot*100)+'%':'--%';
-  document.getElementById('s-fed').textContent=S.fed;
+  document.getElementById('s-wins').textContent=S.wins;
   document.getElementById('s-words').textContent=Object.keys(S.learned).length;
   document.getElementById('s-sub').textContent=S.name?('和 '+S.name+' 一起努力的足跡（實際學習 '+days+' 天）'):'和小夥伴一起努力的足跡';
   var ws=Object.keys(S.wrongs).map(function(k){return {k:k,n:S.wrongs[k]};})
     .sort(function(a,b){return b.n-a.n;}).slice(0,8);
   var box=document.getElementById('s-wrongs');
-  if(!ws.length){box.innerHTML='<div class="s-empty">目前沒有紀錄，太棒了！</div>';return;}
-  box.innerHTML=ws.map(function(w){
+  if(!ws.length){box.innerHTML='<div class="s-empty">目前沒有紀錄，太棒了！</div>';}
+  else box.innerHTML=ws.map(function(w){
     var p=w.k.split('|||');
     return '<div class="s-wordrow"><span class="jp">'+p[0]+'</span><span class="zh">'+p[1]+'（錯 '+w.n+' 次）</span></div>';
   }).join('');
+  renderGallery();
+  var u=document.getElementById('sd-url');
+  if(u&&document.activeElement!==u)u.value=S.sdUrl;
 }
 
 /* ── 泡泡 / 特效 / Toast ── */
@@ -573,7 +829,6 @@ function patPet(){
   }
   var now=Date.now();
   if(now-S.lastPat<PAT_CD){
-    /* 冷卻中：說一句學過的日文 */
     var keys=Object.keys(S.learned);
     if(keys.length){
       var k=keys[Math.floor(Math.random()*keys.length)];
@@ -606,6 +861,14 @@ function feed(id){
   toast(f.name+'（'+f.jp+'）滿腹 +'+f.hunger);
   checkLevel();save();render();
 }
+function gainFood(n){
+  var got=[];
+  for(var i=0;i<n;i++){
+    var f=FOODS[Math.floor(Math.random()*FOODS.length)];
+    S.inv[f.id]=(S.inv[f.id]||0)+1;got.push(f);
+  }
+  return got;
+}
 function checkLevel(){
   var li=levelInfo();
   if(!S._lv)S._lv=1;
@@ -619,18 +882,11 @@ function checkLevel(){
         3:['🎒','旅行柴誕生！','戴上草帽、背起行囊——\n牠現在是見多識廣的旅行柴前輩了！']
       };
       var m=msgs[newStage];
-      if(m)showEv(m[0],m[1],m[2]);
+      if(m)showEv(m[0],m[1],m[2],true);
     }else{
       toast('升級！Lv.'+li.lv+' 🎉');
       fx('⬆️');
     }
-  }
-  /* 新景點 */
-  var idx=stopIndex();
-  if(idx+1>S.stopsSeen){
-    S.stopsSeen=idx+1;
-    var s=STOPS[idx];
-    showEv(s.em,'抵達 '+s.name+'！',s.name+'（'+s.jp+'）\n'+s.desc);
   }
 }
 
@@ -657,38 +913,25 @@ function tick(){
   }
 }
 
-/* ── 測驗 ── */
+/* ── 覓食測驗 ── */
 var Q={list:[],i:0,got:[],answered:false};
 function pickQuestions(){
-  var pool=[];
-  VDB.forEach(function(d){d.words.forEach(function(w){pool.push({w:w,theme:d.theme});});});
-  /* 一半機率優先出錯過的題 */
+  var pool=poolByThemes(null);
   var wrongKeys=Object.keys(S.wrongs);
   var list=[],used={};
-  while(list.length<QUIZ_LEN){
-    var item=null;
+  var guard=0;
+  while(list.length<QUIZ_LEN&&guard<200){
+    guard++;
+    var q;
     if(wrongKeys.length&&Math.random()<0.3){
       var wk=wrongKeys[Math.floor(Math.random()*wrongKeys.length)];
       var jp=wk.split('|||')[0];
-      for(var i=0;i<pool.length;i++)if(pool[i].w.jp===jp){item=pool[i];break;}
-    }
-    if(!item)item=pool[Math.floor(Math.random()*pool.length)];
-    if(used[item.w.jp])continue;
-    used[item.w.jp]=true;
-    var dir=Math.random()<0.5?'j2z':'z2j';
-    /* 選項 */
-    var opts=[dir==='j2z'?item.w.zh:item.w.jp],seen={};
-    seen[opts[0]]=true;
-    var guard=0;
-    while(opts.length<4&&guard<300){
-      guard++;
-      var o=pool[Math.floor(Math.random()*pool.length)].w;
-      var v=dir==='j2z'?o.zh:o.jp;
-      if(seen[v])continue;
-      seen[v]=true;opts.push(v);
-    }
-    for(var j=opts.length-1;j>0;j--){var r=Math.floor(Math.random()*(j+1));var tmp=opts[j];opts[j]=opts[r];opts[r]=tmp;}
-    list.push({w:item.w,theme:item.theme,dir:dir,opts:opts});
+      var sub=pool.filter(function(p){return p.w.jp===jp;});
+      q=sub.length?makeVQ(sub):makeVQ(pool);
+    }else q=makeVQ(pool);
+    if(used[q.w.jp])continue;
+    used[q.w.jp]=true;
+    list.push(q);
   }
   return list;
 }
@@ -697,50 +940,46 @@ function startQuiz(){
   go('quiz');
   renderQ();
 }
+function qHTML(q,idx,total,onAns){
+  return '<div class="q-head"><div class="q-prog">第 '+(idx+1)+' / '+total+' 題</div>'+
+    '<div class="q-quit" onclick="go(\'home\')">先不玩了</div></div>'+
+    '<div class="q-card"><div class="q-theme">'+q.theme+'・'+q.ask+'</div>'+
+    '<div class="q-word">'+q.prompt+'</div><div class="q-rd">'+q.rd+'</div></div>'+
+    '<div class="q-opts">'+q.opts.map(function(o,i){
+      return '<button class="q-opt" onclick="'+onAns+'('+i+')">'+o+'</button>';
+    }).join('')+'</div>'+
+    '<div class="q-fb" id="q-fb"></div>';
+}
+function markOpts(q,i){
+  var btns=document.querySelectorAll('.q-opt');
+  btns.forEach(function(b,bi){
+    if(q.opts[bi]===q.right)b.classList.add('good');
+    else if(bi===i)b.classList.add('bad');
+    else b.classList.add('dim');
+  });
+}
 function renderQ(){
   var wrap=document.getElementById('q-wrap');
   if(Q.i>=Q.list.length){renderReward();return;}
-  var q=Q.list[Q.i];
   Q.answered=false;
-  var prompt=q.dir==='j2z'?q.w.jp:q.w.zh;
-  var rd=q.dir==='j2z'?q.w.rd:'';
-  var ask=q.dir==='j2z'?'這是什麼意思？':'日文怎麼說？';
-  wrap.innerHTML=
-    '<div class="q-head"><div class="q-prog">第 '+(Q.i+1)+' / '+Q.list.length+' 題</div>'+
-    '<div class="q-quit" onclick="go(\'home\')">先不玩了</div></div>'+
-    '<div class="q-card"><div class="q-theme">'+q.theme+'・'+ask+'</div>'+
-    '<div class="q-word">'+prompt+'</div><div class="q-rd">'+rd+'</div></div>'+
-    '<div class="q-opts">'+q.opts.map(function(o,i){
-      return '<button class="q-opt" onclick="answer('+i+')">'+o+'</button>';
-    }).join('')+'</div>'+
-    '<div class="q-fb" id="q-fb"></div>';
+  wrap.innerHTML=qHTML(Q.list[Q.i],Q.i,Q.list.length,'answer');
 }
 function answer(i){
   if(Q.answered)return;
   Q.answered=true;
   var q=Q.list[Q.i];
-  var right=q.dir==='j2z'?q.w.zh:q.w.jp;
-  var ok=q.opts[i]===right;
-  var btns=document.querySelectorAll('.q-opt');
-  btns.forEach(function(b,bi){
-    if(q.opts[bi]===right)b.classList.add('good');
-    else if(bi===i)b.classList.add('bad');
-    else b.classList.add('dim');
-  });
+  var ok=q.opts[i]===q.right;
+  markOpts(q,i);
   var fb=document.getElementById('q-fb');
-  var key=q.w.jp+'|||'+q.w.zh;
-  markStudy();
+  recordAnswer(q,ok);
   if(ok){
-    S.correct++;S.xp+=8;
-    S.learned[key]={jp:q.w.jp,rd:q.w.rd,zh:q.w.zh};
-    var f=FOODS[Math.floor(Math.random()*FOODS.length)];
-    S.inv[f.id]=(S.inv[f.id]||0)+1;
+    S.xp+=8;
+    var f=gainFood(1)[0];
     Q.got.push(f);
     fb.innerHTML='<span style="color:var(--green)">⭕ 正解！獲得 '+f.em+' '+f.name+'</span>';
   }else{
-    S.wrong++;S.xp+=2;
-    S.wrongs[key]=(S.wrongs[key]||0)+1;
-    fb.innerHTML='<span style="color:var(--danger)">❌ 正解是「'+right+'」（'+q.w.rd+'）</span>';
+    S.xp+=2;
+    fb.innerHTML='<span style="color:var(--danger)">❌ 正解是「'+q.right+'」'+(q.w?'（'+q.w.rd+'）':'')+'</span>';
   }
   checkLevel();save();
   setTimeout(function(){Q.i++;renderQ();},ok?900:1700);
@@ -758,17 +997,512 @@ function renderReward(){
     '<div class="q-head"><div class="q-prog">覓食結果</div><div></div></div>'+
     '<div class="q-reward"><div class="big">'+em+'</div>'+
     '<h3>答對 '+n+' / '+Q.list.length+' 題</h3>'+
+    '<p>'+msg+'</p>'+
     (n?'<div class="foods">'+foods+'</div><p>食物已放進背包，點擊背包裡的食物就能餵食。</p>':'<p>再挑戰一次，牠肚子咕嚕咕嚕叫了…</p>')+
     '<div><button class="btn" onclick="startQuiz()">再來一輪 📝</button> '+
-    '<button class="btn ghost" onclick="go(\'home\')">回去餵食 🍙</button></div></div>';
+    '<button class="btn ghost" onclick="go(\'home\')">回小夥伴 🐕</button></div></div>';
   render();
 }
 
+/* ── 修行頁 ── */
+function renderTrain(){
+  var w=document.getElementById('t-wrap'),html='';
+  html+='<div class="pg-title">🎓 修行道場</div>'+
+    '<div class="pg-sub">完成「主題特訓」習得戰鬥技能；重複特訓可提升技能等級（最高 Lv.'+SKILL_MAX_LV+'）。<br>文法系技能要先上課、再通過測驗！</div>';
+  html+='<div class="t-sec-title">⚔️ 技能特訓</div>';
+  SKILLS.forEach(function(sk){
+    var st=skillState(sk.id);
+    var lvTxt=st?('Lv.'+st.lv+(st.lv>=SKILL_MAX_LV?'（MAX）':' <span class="exp">EXP '+st.exp+'/'+skillNeed(st.lv)+'</span>')):'';
+    var src=sk.grammar?'文法課程':sk.themes.join('・');
+    html+='<div class="sk-card'+(st?'':' locked')+'">'+
+      '<div class="sk-em">'+sk.em+'</div>'+
+      '<div class="sk-body"><div class="sk-name">'+sk.name+'<span class="tag '+sk.type+'">'+TYPE_LABEL[sk.type]+'</span></div>'+
+      '<div class="sk-desc">'+sk.desc+'<br>領域：'+src+'</div>'+
+      (st?'<div class="sk-lv">'+lvTxt+'</div>':'<div class="sk-lv" style="color:var(--text3)">尚未習得</div>')+
+      '</div>'+
+      '<button class="sk-btn'+(st?'':' learn')+'" onclick="startTokkun(\''+sk.id+'\')">'+(st?'特訓':'習得')+'</button>'+
+      '</div>';
+  });
+  html+='<div class="t-sec-title">📜 句型修行（重組句子）</div>'+
+    '<div class="sk-card"><div class="sk-em">🧩</div>'+
+    '<div class="sk-body"><div class="sk-name">句子重組<span class="tag shield">文法</span></div>'+
+    '<div class="sk-desc">把打亂的單字排回正確順序。完成可獲得「敬語結界」經驗與 EXP。已完成 '+S.bunkeiDone+' 次。</div></div>'+
+    '<button class="sk-btn" onclick="startBunkei()">開始</button></div>';
+  html+='<div class="t-sec-title">🍙 肚子餓了？</div>'+
+    '<div class="sk-card"><div class="sk-em">🎒</div>'+
+    '<div class="sk-body"><div class="sk-name">測驗覓食</div>'+
+    '<div class="sk-desc">綜合題 5 題，答對就有食物。</div></div>'+
+    '<button class="sk-btn" onclick="startQuiz()">出發</button></div>';
+  w.innerHTML=html;
+}
+
+/* ── 主題特訓 ── */
+var T={sk:null,list:[],i:0,ok:0,answered:false,lesson:null};
+function startTokkun(id){
+  var sk=skillDef(id);
+  T.sk=sk;T.i=0;T.ok=0;T.list=[];
+  if(sk.grammar){
+    T.lesson=GDB[Math.floor(Math.random()*GDB.length)];
+    for(var i=0;i<GTOKKUN_LEN;i++)T.list.push(makeGQ());
+    renderLesson();
+  }else{
+    T.lesson=null;
+    var pool=poolByThemes(sk.themes),used={};
+    var guard=0;
+    while(T.list.length<TOKKUN_LEN&&guard<200){
+      guard++;
+      var q=makeVQ(pool);
+      if(used[q.w.jp])continue;
+      used[q.w.jp]=true;T.list.push(q);
+    }
+    go('train');renderT();
+  }
+}
+function renderLesson(){
+  var g=T.lesson,w=document.getElementById('t-wrap');
+  go('train');
+  var exs=g.examples.map(function(e){
+    return '<div class="l-ex"><div class="jp">'+e.jp+'</div><div class="zh">'+e.rd+'｜'+e.zh+'</div></div>';
+  }).join('');
+  w.innerHTML='<div class="q-head"><div class="q-prog">📖 文法課程</div>'+
+    '<div class="q-quit" onclick="renderTrain()">返回道場</div></div>'+
+    '<div class="lesson"><span class="l-tag">'+g.tag+'</span>'+
+    '<h3>'+g.title+'</h3><div class="l-sub">'+g.sub+'</div>'+
+    '<div class="l-pattern">'+g.pattern.jp+'<span class="rd">'+g.pattern.rd+'｜'+g.pattern.zh+'</span></div>'+
+    '<div class="l-note">'+g.note+'</div>'+exs+
+    '<div style="text-align:center"><button class="btn" onclick="renderT()">上完課，開始測驗 ✏️</button></div></div>';
+}
+function renderT(){
+  var w=document.getElementById('t-wrap');
+  go('train');
+  if(T.i>=T.list.length){renderTResult();return;}
+  T.answered=false;
+  w.innerHTML='<div style="font-size:12px;font-weight:900;color:var(--purple);margin-bottom:8px">'+T.sk.em+' '+T.sk.name+'・特訓中</div>'+
+    qHTML(T.list[T.i],T.i,T.list.length,'tAnswer').replace("go('home')","renderTrain()");
+}
+function tAnswer(i){
+  if(T.answered)return;
+  T.answered=true;
+  var q=T.list[T.i];
+  var ok=q.opts[i]===q.right;
+  markOpts(q,i);
+  recordAnswer(q,ok);
+  var fb=document.getElementById('q-fb');
+  if(ok){T.ok++;S.xp+=8;fb.innerHTML='<span style="color:var(--green)">⭕ 正解！</span>'+(q.exp?'<br><span style="font-weight:400;color:var(--text2)">'+q.exp+'</span>':'');}
+  else{S.xp+=2;fb.innerHTML='<span style="color:var(--danger)">❌ 正解是「'+q.right+'」</span>'+(q.exp?'<br><span style="font-weight:400;color:var(--text2)">'+q.exp+'</span>':'');}
+  checkLevel();save();
+  setTimeout(function(){T.i++;renderT();},ok?900:1900);
+}
+function renderTResult(){
+  var w=document.getElementById('t-wrap');
+  var need=T.sk.grammar?GTOKKUN_PASS:TOKKUN_PASS;
+  var total=T.list.length;
+  var pass=T.ok>=need;
+  var firstTime=!skillState(T.sk.id);
+  var msg='';
+  if(pass){
+    S.tokkunDone++;
+    if(firstTime){
+      S.skills[T.sk.id]={lv:1,exp:0};
+      addSkillExp(T.sk.id,T.ok);
+      msg='🎉 習得新技能「'+T.sk.name+'」！';
+      showEv(T.sk.em,'習得技能！','「'+T.sk.name+'」\n'+T.sk.desc+'\n之後可以在戰鬥中使用！');
+    }else{
+      addSkillExp(T.sk.id,T.ok*2);
+      msg='技能經驗 +'+(T.ok*2)+'！';
+    }
+    S.mood=Math.min(100,S.mood+5);
+  }else{
+    if(!firstTime)addSkillExp(T.sk.id,Math.floor(T.ok/2));
+    msg='未達 '+need+' 題門檻，再接再厲！';
+  }
+  save();
+  w.innerHTML='<div class="q-reward"><div class="big">'+(pass?'🏅':'💦')+'</div>'+
+    '<h3>'+T.sk.name+'：答對 '+T.ok+' / '+total+'</h3>'+
+    '<p>'+msg+'</p>'+
+    '<div><button class="btn" onclick="startTokkun(\''+T.sk.id+'\')">再特訓一次</button> '+
+    '<button class="btn ghost" onclick="renderTrain()">返回道場</button></div></div>';
+  render();
+}
+
+/* ── 句子重組 ── */
+var BK={g:null,ex:null,tokens:[],picked:[]};
+function startBunkei(){
+  var guard=0,ex=null,g=null;
+  while(guard<50){
+    guard++;
+    g=GDB[Math.floor(Math.random()*GDB.length)];
+    ex=g.examples[Math.floor(Math.random()*g.examples.length)];
+    if(ex.rd.split(' ').length>=3)break;
+  }
+  BK.g=g;BK.ex=ex;
+  BK.tokens=ex.rd.split(' ');
+  BK.picked=[];
+  go('train');renderBK();
+}
+function renderBK(){
+  var w=document.getElementById('t-wrap');
+  var pool=BK.tokens.map(function(t,i){return {t:t,i:i};});
+  /* 顯示順序固定隨機：用種子化排序（以句子為鍵） */
+  var order=pool.slice();
+  if(!BK.order){
+    BK.order=shuffle(pool.map(function(p){return p.i;}));
+    /* 避免剛好原順序 */
+    var same=BK.order.every(function(v,i){return v===i;});
+    if(same)BK.order.reverse();
+  }
+  var chosenIdx={};
+  BK.picked.forEach(function(i){chosenIdx[i]=true;});
+  w.innerHTML='<div class="q-head"><div class="q-prog">🧩 句型修行・'+BK.g.title+'</div>'+
+    '<div class="q-quit" onclick="BK.order=null;renderTrain()">返回道場</div></div>'+
+    '<div class="bk-target"><div class="bk-zh">「'+BK.ex.zh+'」</div>'+
+    '<div class="bk-jp">'+BK.ex.jp+'</div></div>'+
+    '<div class="bk-slot" id="bk-slot">'+(BK.picked.length?BK.picked.map(function(i,pi){
+      return '<button class="tile in" onclick="bkUnpick('+pi+')">'+BK.tokens[i]+'</button>';
+    }).join(''):'<span class="ph">依照讀音順序點選下面的單字…</span>')+'</div>'+
+    '<div class="bk-pool">'+BK.order.map(function(i){
+      return chosenIdx[i]?'':'<button class="tile" onclick="bkPick('+i+')">'+BK.tokens[i]+'</button>';
+    }).join('')+'</div>'+
+    '<div style="text-align:center">'+
+    (BK.picked.length===BK.tokens.length?'<button class="btn" onclick="bkCheck()">確認 ✅</button>':'')+
+    ' <button class="btn ghost sm" onclick="BK.picked=[];renderBK()">重排</button></div>'+
+    '<div class="q-fb" id="bk-fb"></div>';
+}
+function bkPick(i){if(BK.picked.indexOf(i)>=0)return;BK.picked.push(i);renderBK();}
+function bkUnpick(pi){BK.picked.splice(pi,1);renderBK();}
+function bkCheck(){
+  var ans=BK.picked.map(function(i){return BK.tokens[i];}).join(' ');
+  var right=BK.tokens.join(' ');
+  var fb=document.getElementById('bk-fb');
+  markStudy();
+  if(ans===right){
+    S.correct++;S.xp+=12;S.bunkeiDone++;
+    if(S.skills.keigo)addSkillExp('keigo',4);
+    else toast('句型修行完成！（習得「敬語結界」後可累積技能經驗）');
+    S.mood=Math.min(100,S.mood+4);
+    checkLevel();save();
+    fb.innerHTML='<span style="color:var(--green)">⭕ 完美重組！EXP +12'+(S.skills.keigo?'、敬語結界經驗 +4':'')+'</span>';
+    setTimeout(function(){BK.order=null;startBunkei();},1400);
+  }else{
+    S.wrong++;save();
+    fb.innerHTML='<span style="color:var(--danger)">❌ 順序不對，正解：'+right+'</span>';
+    setTimeout(function(){BK.picked=[];renderBK();},2200);
+  }
+}
+
+/* ── 戰鬥 ── */
+var B={active:false,ei:0,rematch:false,php:0,pmax:0,ehp:0,shield:false,combo:0,busy:false,q:null,skid:null};
+function renderBattleHome(){
+  var w=document.getElementById('b-wrap'),html='';
+  var next=S.beaten<ENEMIES.length?ENEMIES[S.beaten]:null;
+  html+='<div class="pg-title">⚔️ 妖怪關所</div>'+
+    '<div class="pg-sub">出招前要先答對該技能領域的題目！連續答對還有連擊加成。<br>戰鬥會消耗滿腹 8 點（需 ≥ 15）。</div>';
+  if(next){
+    html+='<div class="t-sec-title">🚧 下一關（打贏前往 '+STOPS[S.beaten+1].name+'）</div>'+
+      '<div class="e-card"><div class="e-em">'+next.em+'</div>'+
+      '<div class="e-body"><div class="e-name">'+next.name+'<span class="jp">'+next.jp+'</span></div>'+
+      '<div class="e-desc">'+next.desc+'</div>'+
+      '<div class="e-stats">HP '+next.hp+'｜攻擊 '+next.atk+'</div></div>'+
+      '<button class="sk-btn" onclick="startBattle('+S.beaten+',false)">挑戰！</button></div>';
+  }else{
+    html+='<div class="q-reward"><div class="big">👑</div><h3>全關制霸！</h3><p>你和小夥伴打敗了所有守關妖怪，環遊日本達成！<br>可以回頭再戰任何妖怪賺食物。</p></div>';
+  }
+  var beatenList=ENEMIES.slice(0,S.beaten);
+  if(beatenList.length){
+    html+='<div class="t-sec-title">🔁 再戰（獎勵減半，可賺食物）</div>';
+    beatenList.forEach(function(e,i){
+      html+='<div class="e-card"><div class="e-em">'+e.em+'</div>'+
+        '<div class="e-body"><div class="e-name">'+e.name+'<span class="jp">'+e.jp+'</span></div>'+
+        '<div class="e-stats">HP '+e.hp+'｜攻擊 '+e.atk+'</div></div>'+
+        '<button class="sk-btn" style="background:var(--text3)" onclick="startBattle('+i+',true)">再戰</button></div>';
+    });
+  }
+  var locked=ENEMIES.slice(S.beaten+1);
+  if(locked.length&&next){
+    html+='<div class="t-sec-title">🔒 之後的關卡</div>';
+    locked.forEach(function(e){
+      html+='<div class="e-card locked"><div class="e-em">'+e.em+'</div>'+
+        '<div class="e-body"><div class="e-name">？？？</div>'+
+        '<div class="e-desc">先打贏前面的守關妖怪吧。</div></div></div>';
+    });
+  }
+  w.innerHTML=html;
+}
+function startBattle(ei,rematch){
+  if(stageOf(levelInfo().lv)===0){toast('還是顆蛋，先餵養孵化再戰鬥！🥚');return;}
+  if(S.hunger<15){toast('滿腹不足 15，先餵點東西吧 🍙');return;}
+  var learned=SKILLS.filter(function(sk){return skillState(sk.id);});
+  if(!learned.length){toast('先去修行道場習得技能！');go('train');return;}
+  S.hunger=Math.max(0,S.hunger-8);
+  B.active=true;B.ei=ei;B.rematch=!!rematch;
+  B.pmax=maxHP();B.php=B.pmax;
+  B.ehp=ENEMIES[ei].hp;B.shield=false;B.combo=0;B.busy=false;B.q=null;
+  save();
+  go('battle');
+  renderBattle('野生的 '+ENEMIES[ei].name+' 擋住了去路！選擇技能應戰！');
+}
+function renderBattle(log){
+  var w=document.getElementById('b-wrap');
+  var e=ENEMIES[B.ei];
+  var ep=Math.max(0,Math.round(B.ehp/e.hp*100));
+  var pp=Math.max(0,Math.round(B.php/B.pmax*100));
+  var html='<div class="b-arena">'+
+    '<div class="b-badges">'+(B.combo>1?'<span class="b-badge combo">🔥 連擊 x'+B.combo+'</span>':'')+(B.shield?'<span class="b-badge">🛡️ 結界中</span>':'')+'</div>'+
+    '<div class="b-row">'+
+    '<div class="b-fighter"><span class="b-enemy-em" id="b-enemy">'+e.em+'</span>'+
+    '<div class="b-hp"><div class="b-hp-name">'+e.name+'</div>'+
+    '<div class="b-hp-bar"><div class="b-hp-fill'+(ep<30?' low':'')+'" style="width:'+ep+'%"></div></div>'+
+    '<div class="b-hp-num">'+Math.max(0,Math.round(B.ehp))+' / '+e.hp+'</div></div></div>'+
+    '<div class="b-vs">VS</div>'+
+    '<div class="b-fighter"><span class="b-pet" id="b-pet">'+petSVG()+'</span>'+
+    '<div class="b-hp"><div class="b-hp-name">'+S.name+'</div>'+
+    '<div class="b-hp-bar"><div class="b-hp-fill'+(pp<30?' low':'')+'" style="width:'+pp+'%"></div></div>'+
+    '<div class="b-hp-num">'+Math.max(0,Math.round(B.php))+' / '+B.pmax+'</div></div></div>'+
+    '</div></div>'+
+    '<div class="b-log">'+log+'</div>';
+  if(B.q){
+    html+='<div class="b-q">'+
+      '<div class="q-card" style="padding:16px"><div class="q-theme">'+B.q.theme+'・答對才能出招！</div>'+
+      '<div class="q-word" style="font-size:20px">'+B.q.prompt+'</div><div class="q-rd">'+B.q.rd+'</div></div>'+
+      '<div class="q-opts">'+B.q.opts.map(function(o,i){
+        return '<button class="q-opt" onclick="bAnswer('+i+')">'+o+'</button>';
+      }).join('')+'</div><div class="q-fb" id="q-fb"></div></div>';
+  }else if(!B.busy){
+    var learned=SKILLS.filter(function(sk){return skillState(sk.id);});
+    html+='<div class="b-skills">'+learned.map(function(sk){
+      var st=skillState(sk.id);
+      var d;
+      if(sk.type==='heal')d='回復 '+(Math.round(B.pmax*(0.3+0.05*(st.lv-1))))+' HP';
+      else if(sk.type==='shield')d='傷害減半＋回復12';
+      else{
+        var base=Math.round(sk.power*skillMult(st.lv));
+        d='威力 '+base+(sk.type==='multi'?' x2':'')+(sk.type==='drain'?'（吸收40%）':'')+(sk.type==='atk2'?'（可搶食物）':'');
+      }
+      return '<button class="b-skill" onclick="useSkill(\''+sk.id+'\')"><div class="n">'+sk.em+' '+sk.name+' Lv.'+st.lv+'</div><div class="d">'+d+'</div></button>';
+    }).join('')+'</div>'+
+    '<div class="b-flee" onclick="flee()">🏃 逃走（不算輸，但有點丟臉）</div>';
+  }
+  w.innerHTML=html;
+}
+function useSkill(id){
+  if(B.busy||B.q)return;
+  var sk=skillDef(id);
+  B.skid=id;
+  B.q=sk.grammar?makeGQ():makeVQ(poolByThemes(sk.themes));
+  renderBattle(sk.em+' 詠唱「'+sk.name+'」中——回答問題來發動！');
+}
+function bAnswer(i){
+  if(!B.q||B.busy)return;
+  B.busy=true;
+  var q=B.q,sk=skillDef(B.skid),st=skillState(B.skid);
+  var ok=q.opts[i]===q.right;
+  markOpts(q,i);
+  recordAnswer(q,ok);
+  var fb=document.getElementById('q-fb');
+  if(fb)fb.innerHTML=ok?'<span style="color:var(--green)">⭕ 發動成功！</span>':'<span style="color:var(--danger)">❌ 正解「'+q.right+'」，技能失敗…</span>';
+  save();
+  setTimeout(function(){resolveTurn(ok,sk,st);},ok?800:1600);
+}
+function resolveTurn(ok,sk,st){
+  var e=ENEMIES[B.ei];
+  var log='';
+  B.q=null;
+  if(ok){
+    B.combo=Math.min(6,B.combo+1);
+    var comboMul=1+0.08*(B.combo-1);
+    if(sk.type==='heal'){
+      var h=Math.round(B.pmax*(0.3+0.05*(st.lv-1)));
+      B.php=Math.min(B.pmax,B.php+h);
+      log='🩹 '+S.name+' 使用救急包，回復 '+h+' HP！';
+    }else if(sk.type==='shield'){
+      B.shield=true;B.php=Math.min(B.pmax,B.php+12);
+      log='🙏 敬語結界展開！下次受傷減半，並回復 12 HP。';
+    }else{
+      var hits=sk.type==='multi'?(sk.hits||2):1;
+      var dmg=0;
+      for(var i=0;i<hits;i++)dmg+=Math.round(sk.power*skillMult(st.lv)*comboMul*(0.9+Math.random()*0.2))+Math.floor(levelInfo().lv/2);
+      B.ehp-=dmg;
+      log=sk.em+'「'+sk.name+'」命中！造成 '+dmg+' 傷害'+(hits>1?'（'+hits+' 連擊）':'')+(B.combo>1?'　🔥x'+B.combo:'');
+      if(sk.type==='drain'){
+        var back=Math.round(dmg*0.4);
+        B.php=Math.min(B.pmax,B.php+back);
+        log+='，並吸收回復 '+back+' HP';
+      }
+      if(sk.type==='atk2'&&Math.random()<0.2+0.05*st.lv){
+        var f=gainFood(1)[0];
+        log+='，還搶到了 '+f.em+' '+f.name+'！';
+      }
+    }
+  }else{
+    B.combo=0;
+    log='💨 技能發動失敗…';
+  }
+  addSkillExp(sk.id,ok?1:0);
+  if(B.ehp<=0){winBattle();return;}
+  /* 敵方回擊 */
+  var edmg=Math.round(e.atk*(0.85+Math.random()*0.3));
+  if(B.shield){edmg=Math.ceil(edmg/2);B.shield=false;log+='　🛡️ 結界抵擋了一半！';}
+  B.php-=edmg;
+  log+='　👊 '+e.name+' 反擊，受到 '+edmg+' 傷害！';
+  if(B.php<=0){loseBattle();return;}
+  B.busy=false;
+  renderBattle(log);
+  var pe=document.getElementById('b-enemy'),pp=document.getElementById('b-pet');
+  if(ok&&pe){pe.classList.add('hit');}
+  if(pp){pp.classList.add('hit');}
+  save();
+}
+function winBattle(){
+  var e=ENEMIES[B.ei];
+  B.active=false;B.busy=false;
+  S.wins++;
+  var xp=B.rematch?Math.round((30+B.ei*12)/2):(30+B.ei*12);
+  S.xp+=xp;
+  var foods=gainFood(B.rematch?1:2+(B.ei>=4?1:0));
+  var adv=!B.rematch&&B.ei===S.beaten;
+  if(adv)S.beaten++;
+  S.mood=Math.min(100,S.mood+8);
+  checkLevel();save();
+  renderBattleHome();
+  var foodTxt=foods.map(function(f){return f.em;}).join(' ');
+  var text='獲得 EXP +'+xp+'、食物 '+foodTxt+(adv?'\n\n🎉 前進到下一站：'+STOPS[S.beaten].name+'（'+STOPS[S.beaten].jp+'）！':'');
+  showEv('🏆','擊敗 '+e.name+'！',text,false,
+    '<button class="btn sm" onclick="sdVictory('+B.ei+')">🎨 生成勝利紀念圖</button>');
+  render();
+}
+function loseBattle(){
+  var e=ENEMIES[B.ei];
+  B.active=false;B.busy=false;
+  S.losses++;
+  S.mood=Math.max(0,S.mood-8);
+  save();
+  renderBattleHome();
+  showEv('💫','被 '+e.name+' 打敗了…','小夥伴揉揉頭上的包。\n去修行道場提升技能等級，吃飽一點再來挑戰吧！');
+  render();
+}
+function flee(){
+  B.active=false;B.q=null;B.busy=false;
+  renderBattleHome();
+  toast('三十六計走為上策！🏃');
+}
+
+/* ── Stable Diffusion（本機 Forge API）── */
+function sdUrl(){
+  var u=document.getElementById('sd-url');
+  if(u&&u.value.trim())S.sdUrl=u.value.trim().replace(/\/+$/,'');
+  return S.sdUrl;
+}
+function sdSetStatus(msg,colr){
+  var el=document.getElementById('sd-status');
+  if(el){el.textContent=msg;el.style.color=colr||'var(--text2)';}
+}
+function sdTest(){
+  var base=sdUrl();save();
+  sdSetStatus('連線中…');
+  fetch(base+'/sdapi/v1/sd-models',{method:'GET'}).then(function(r){
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    return r.json();
+  }).then(function(d){
+    sdSetStatus('✅ 已連線（'+(d.length||0)+' 個模型）','var(--green)');
+    toast('Stable Diffusion 連線成功！');
+  }).catch(function(err){
+    sdSetStatus('❌ 連不上：'+err.message,'var(--danger)');
+  });
+}
+var SD_NEG='lowres, bad anatomy, extra limbs, deformed, text, watermark, signature, photo, realistic, scary, dark';
+function sdGenerate(prompt,caption){
+  var base=S.sdUrl;
+  var m=document.getElementById('sd-modal');
+  document.getElementById('sd-title').textContent='生成中…';
+  document.getElementById('sd-text').textContent='Stable Diffusion 正在作畫（約 10～30 秒）';
+  document.getElementById('sd-body').innerHTML='<div class="spinner"></div><div style="font-size:11px;color:var(--text3);word-break:break-all">'+prompt+'</div>';
+  m.classList.add('on');
+  fetch(base+'/sdapi/v1/txt2img',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({prompt:prompt,negative_prompt:SD_NEG,steps:22,width:512,height:512,cfg_scale:7})
+  }).then(function(r){
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    return r.json();
+  }).then(function(d){
+    if(!d.images||!d.images.length)throw new Error('沒有回傳圖片');
+    var src='data:image/png;base64,'+d.images[0];
+    compressImg(src,function(small){
+      S.gallery.push({img:small,cap:caption,t:Date.now()});
+      while(S.gallery.length>8)S.gallery.shift();
+      save();renderGallery();
+      document.getElementById('sd-title').textContent='完成！已存入繪馬牆 🎨';
+      document.getElementById('sd-text').textContent=caption;
+      document.getElementById('sd-body').innerHTML='<img class="gen" src="'+src+'">';
+    });
+  }).catch(function(err){
+    document.getElementById('sd-title').textContent='生成失敗';
+    document.getElementById('sd-text').textContent='';
+    document.getElementById('sd-body').innerHTML='<p style="font-size:12px;color:var(--danger);line-height:1.8">'+err.message+
+      '<br><br>請確認：<br>1️⃣ 你的電腦上 Forge 已啟動<br>2️⃣ webui-user.bat 已加上 --api --cors-allow-origins=*<br>3️⃣ 「紀錄」頁的 API 網址正確（預設 http://127.0.0.1:7860）</p>';
+  });
+}
+function compressImg(src,cb){
+  var img=new Image();
+  img.onload=function(){
+    try{
+      var c=document.createElement('canvas');
+      c.width=320;c.height=320;
+      c.getContext('2d').drawImage(img,0,0,320,320);
+      cb(c.toDataURL('image/jpeg',0.82));
+    }catch(e){cb(src);}
+  };
+  img.onerror=function(){cb(src);};
+  img.src=src;
+}
+function sdVictory(ei){
+  closeEv();
+  var e=ENEMIES[ei];
+  var st=stageOf(levelInfo().lv);
+  var loc=STOPS[Math.min(ei+1,STOPS.length-1)];
+  var prompt='chibi '+STAGE_EN[st]+', triumphant victory pose, confetti, sparkles, defeated '+e.en+
+    ' sitting dizzy nearby, background: '+loc.en+', cute kawaii sticker style, watercolor illustration, clean lineart, vibrant colors, masterpiece, best quality';
+  sdGenerate(prompt,'擊敗'+e.name+'@'+loc.name);
+}
+function sdPortrait(){
+  sdUrl();save();
+  var st=stageOf(levelInfo().lv);
+  var loc=STOPS[stopIndex()];
+  var prompt='chibi '+STAGE_EN[st]+', sitting happily and smiling, background: '+loc.en+
+    ', cute kawaii sticker style, watercolor illustration, clean lineart, soft pastel colors, masterpiece, best quality';
+  sdGenerate(prompt,S.name+'的肖像@'+loc.name);
+}
+function closeSd(){document.getElementById('sd-modal').classList.remove('on');}
+function renderGallery(){
+  var box=document.getElementById('gallery-box');
+  if(!box)return;
+  if(!S.gallery.length){
+    box.innerHTML='<div class="s-empty">還沒有紀念圖。打贏妖怪或在設定測試連線後，就能用 Stable Diffusion 生成！</div>';
+    return;
+  }
+  box.innerHTML='<div class="gallery">'+S.gallery.map(function(g,i){
+    return '<div class="gal-item" onclick="viewGal('+i+')"><img src="'+g.img+'"><div class="gal-cap">'+g.cap+'</div></div>';
+  }).join('')+'</div>';
+}
+function viewGal(i){
+  var g=S.gallery[i];
+  if(!g)return;
+  document.getElementById('sd-title').textContent=g.cap;
+  document.getElementById('sd-text').textContent=new Date(g.t).toLocaleDateString();
+  document.getElementById('sd-body').innerHTML='<img class="gen" src="'+g.img+'">'+
+    '<button class="btn sm ghost" onclick="delGal('+i+')">刪除這張</button>';
+  document.getElementById('sd-modal').classList.add('on');
+}
+function delGal(i){
+  S.gallery.splice(i,1);save();renderGallery();closeSd();
+}
+
 /* ── 事件彈窗 ── */
-function showEv(em,title,text){
+function showEv(em,title,text,noExtra,extraHTML){
   document.getElementById('ev-big').textContent=em;
   document.getElementById('ev-title').textContent=title;
   document.getElementById('ev-text').innerHTML=text.replace(/\n/g,'<br>');
+  document.getElementById('ev-extra').innerHTML=extraHTML||'';
   document.getElementById('ev-modal').classList.add('on');
 }
 function closeEv(e){
@@ -780,11 +1514,14 @@ function closeEv(e){
 function go(pg){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
   document.getElementById('pg-'+pg).classList.add('on');
+  var hl=pg==='quiz'?'train':pg;
   document.querySelectorAll('.nav-item').forEach(function(n){
-    n.classList.toggle('on',n.getAttribute('data-pg')===pg);
+    n.classList.toggle('on',n.getAttribute('data-pg')===hl);
   });
-  if(pg==='quiz'&&(!Q.list.length||Q.i>=Q.list.length))startQuiz();
   if(pg==='home')render();
+  if(pg==='train'&&!T.list.length&&!BK.g)renderTrain();
+  if(pg==='train'&&document.getElementById('t-wrap').innerHTML==='')renderTrain();
+  if(pg==='battle'&&!B.active)renderBattleHome();
 }
 
 /* ── 命名 / 重置 ── */
@@ -802,7 +1539,7 @@ function resetAll(){
   location.reload();
 }
 
-/* ── 提醒訊息（狀態差時）── */
+/* ── 提醒訊息 ── */
 function idleChatter(){
   if(!S.name)return;
   var st=stageOf(levelInfo().lv);
@@ -819,7 +1556,8 @@ if(!S.name){
 }
 if(!S._lv)S._lv=levelInfo().lv;
 render();
-setInterval(function(){tick();render();},60000);
+renderTrain();
+setInterval(function(){tick();if(document.getElementById('pg-home').classList.contains('on'))render();},60000);
 setInterval(idleChatter,45000);
 setTimeout(idleChatter,4000);
 </script>
